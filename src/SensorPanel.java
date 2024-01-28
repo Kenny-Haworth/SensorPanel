@@ -48,6 +48,7 @@ public final class SensorPanel
         SwingUtilities.invokeLater(SensorPanel::new);
     }
 
+    private boolean lockPosition = true;
     private Point dragPoint; //to allow dragging the frame by clicking on any part of it
 
     /**
@@ -75,17 +76,67 @@ public final class SensorPanel
                 dragPoint = event.getPoint();
 
                 //create a popup menu when the user right clicks
-                //TODO give the follow options - toggle on top, toggle border, toggle resizable, (checkboxes for these
-                //first two), reset to default size, reset to default position, reset to defaults
+                /**
+                 * Create a popup menu when the user right clicks with the following options:
+                 *      • Toggle the frame being always on top
+                 *      • Toggle displaying the frame's border
+                 *      • Toggle allowing the frame to resize
+                 *      • Toggle locking the frame's position
+                 *      • TODO Resetting the frame to its default size
+                 *      • TODO Resetting the frame to its default position
+                 *      • TODO Resetting the frame to its default size and position
+                 */
                 if (SwingUtilities.isRightMouseButton(event))
                 {
-                    JCheckBoxMenuItem item = new JCheckBoxMenuItem("Always on Top");
-                    item.setSelected(frame.isAlwaysOnTop());
-                    item.addActionListener(e -> frame.setAlwaysOnTop(item.isSelected()));
+                    //add an option to toggle the frame being always on top
+                    JCheckBoxMenuItem onTopItem = new JCheckBoxMenuItem("Always on Top");
+                    onTopItem.setSelected(frame.isAlwaysOnTop());
+                    onTopItem.addActionListener(e -> frame.setAlwaysOnTop(onTopItem.isSelected()));
 
+                    //add an option to display the frame's border
+                    JCheckBoxMenuItem borderItem = new JCheckBoxMenuItem("Display Border");
+                    JCheckBoxMenuItem resizeItem = new JCheckBoxMenuItem("Frame Resizable");
+                    borderItem.setSelected(!frame.isUndecorated());
+                    borderItem.addActionListener(e ->
+                    {
+                        if (!borderItem.isSelected())
+                        {
+                            resizeItem.setSelected(false);
+                            frame.setResizable(false);
+                        }
+
+                        frame.dispose();
+                        frame.setUndecorated(!borderItem.isSelected());
+                        frame.setVisible(true);
+                    });
+
+                    //add an option to toggle allowing the frame to resize
+                    resizeItem.setSelected(frame.isResizable());
+                    resizeItem.addActionListener(e ->
+                    {
+                        if (frame.isUndecorated() && resizeItem.isSelected())
+                        {
+                            frame.dispose();
+                            frame.setUndecorated(false);
+                            frame.setVisible(true);
+                        }
+
+                        frame.setResizable(resizeItem.isSelected());
+                    });
+
+                    //add an option to toggle locking the position of the grame
+                    JCheckBoxMenuItem positionItem = new JCheckBoxMenuItem("Lock Position");
+                    positionItem.setSelected(lockPosition);
+                    positionItem.addActionListener(e -> lockPosition = !lockPosition);
+
+                    //construct all the components into the popup menu
                     JPopupMenu popupMenu = new JPopupMenu();
-                    popupMenu.add(item);
+                    popupMenu.add(onTopItem);
+                    popupMenu.add(borderItem);
+                    popupMenu.add(resizeItem);
+                    popupMenu.add(positionItem);
 
+                    //display the popup menu
                     popupMenu.show(frame, event.getX(), event.getY());
                 }
             }
@@ -97,8 +148,11 @@ public final class SensorPanel
             @Override
             public void mouseDragged(MouseEvent e)
             {
-                frame.setLocation(frame.getLocation().x + (e.getPoint().x - dragPoint.x),
-                                  frame.getLocation().y + (e.getPoint().y - dragPoint.y));
+                if (!lockPosition)
+                {
+                    frame.setLocation(frame.getLocation().x + (e.getPoint().x - dragPoint.x),
+                                      frame.getLocation().y + (e.getPoint().y - dragPoint.y));
+                }
             }
         });
     }
