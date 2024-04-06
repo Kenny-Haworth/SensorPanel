@@ -4,7 +4,6 @@ import src.Constants;
 import src.Sensor;
 
 import javax.imageio.ImageIO;
-import javax.swing.JPanel;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -24,7 +23,7 @@ import static src.Logger.logError;
 /**
  * This class creates a thermostat.
  */
-public final class Thermostat extends JPanel
+public final class Thermostat extends Figure
 {
     private static final double BULB_SIZE = 0.7; //percentage from 0 to 1
     private static final int BULB_MAX_ANGLE = 300; //180 to 360 range
@@ -40,7 +39,7 @@ public final class Thermostat extends JPanel
      */
     public Thermostat(Sensor sensor, String iconPath)
     {
-        super();
+        super(sensor);
         this.sensor = sensor;
         this.setBackground(Color.BLACK);
 

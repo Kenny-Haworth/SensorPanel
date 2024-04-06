@@ -9,15 +9,13 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
 
-import javax.swing.JPanel;
-
 import src.Constants;
 import src.Sensor;
 
 /**
  * This class creates a modern, smooth gauge.
  */
-public final class SleekGauge extends JPanel
+public final class SleekGauge extends Figure
 {
     private static final int MAX_ANGLE = 300;
     private final Sensor sensor;
@@ -30,7 +28,7 @@ public final class SleekGauge extends JPanel
      */
     public SleekGauge(Sensor sensor)
     {
-        super();
+        super(sensor);
         this.sensor = sensor;
         this.setBackground(Color.BLACK);
 
