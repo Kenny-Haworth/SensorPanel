@@ -1,4 +1,4 @@
-package src;
+package src.util;
 
 import java.util.Spliterator;
 import java.util.Spliterators;
@@ -12,6 +12,11 @@ import javax.swing.plaf.FontUIResource;
  */
 public final class Utils
 {
+    /**
+     * Sets the global default font for the program.
+     *
+     * @param font A default font to set for the program
+     */
     public static void setGlobalFont(FontUIResource font)
     {
         StreamSupport.stream(Spliterators.spliteratorUnknownSize(UIManager.getDefaults().keys().asIterator(), Spliterator.ORDERED), false)

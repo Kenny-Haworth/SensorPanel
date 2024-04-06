@@ -1,7 +1,7 @@
 package src;
 
-import static src.Logger.logError;
-import static src.Logger.logWarning;
+import static src.util.Logger.logError;
+import static src.util.Logger.logWarning;
 
 import src.figure.Figure;
 

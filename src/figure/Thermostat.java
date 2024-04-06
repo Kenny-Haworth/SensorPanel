@@ -1,9 +1,6 @@
 package src.figure;
 
-import src.Constants;
-import src.Sensor;
-
-import javax.imageio.ImageIO;
+import static src.util.Logger.logError;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
@@ -18,7 +15,10 @@ import java.awt.RenderingHints;
 import java.io.File;
 import java.io.IOException;
 
-import static src.Logger.logError;
+import javax.imageio.ImageIO;
+
+import src.Constants;
+import src.Sensor;
 
 /**
  * This class creates a thermostat.
