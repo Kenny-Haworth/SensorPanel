@@ -132,7 +132,7 @@ public final class Thermostat extends JPanel
                     0, 180);
 
         //determine what percentage the interior of the bulb constitutes the entire fillable height
-        double fillPerc = ((this.sensor.get() - this.sensor.min()) / (this.sensor.max() - this.sensor.min()));
+        double fillPerc = ((this.sensor.getData() - this.sensor.min()) / (this.sensor.max() - this.sensor.min()));
         int fillableHeight = this.getHeight() - this.thermWidth * 2;
 
         g2d.setClip(0, this.thermWidth + (int)((1 - fillPerc) * fillableHeight), this.getWidth(), this.getHeight());
@@ -162,7 +162,7 @@ public final class Thermostat extends JPanel
         g2d.setColor(Color.WHITE);
 
         //calculate the font size
-        String value = String.valueOf(Math.round(this.sensor.get())) + this.sensor.unit();
+        String value = String.valueOf(Math.round(this.sensor.getData())) + this.sensor.unit();
         Font font = g2d.getFont();
         Rectangle2D rect = g2d.getFontMetrics(font).getStringBounds(value + "0", g2d);
         g2d.setFont(font.deriveFont((float)((double)font.getSize2D() * (diameter - this.thermWidth)/rect.getWidth())));

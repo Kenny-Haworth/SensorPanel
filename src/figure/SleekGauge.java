@@ -52,7 +52,7 @@ public final class SleekGauge extends JPanel
 
         //get the angle from the sensor's current value
         int startingAngle = MAX_ANGLE/2 - 270;
-        int angle = (int)(((this.sensor.get() - this.sensor.min()) / (this.sensor.max() - this.sensor.min())) * MAX_ANGLE);
+        int angle = (int)(((this.sensor.getData() - this.sensor.min()) / (this.sensor.max() - this.sensor.min())) * MAX_ANGLE);
 
         //draw the unused portion of the gauge first
         g2d.setColor(Color.DARK_GRAY);
@@ -89,7 +89,7 @@ public final class SleekGauge extends JPanel
 
         //display the sensor's value in the center
         FontMetrics metrics = g2d.getFontMetrics();
-        String value = String.valueOf(Math.round(this.sensor.get()));
+        String value = String.valueOf(Math.round(this.sensor.getData()));
         g2d.drawString(value,
                        this.getWidth()/2 - metrics.stringWidth(value)/2,
                        this.getHeight()/2 + metrics.getAscent()/3);
