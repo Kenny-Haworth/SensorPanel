@@ -3,6 +3,8 @@ package src;
 import static src.util.Logger.logError;
 import static src.util.Logger.logWarning;
 
+import java.text.DecimalFormat;
+
 import src.figure.Figure;
 
 /**
@@ -114,13 +116,27 @@ public enum Sensor
     }
 
     /**
-     * Returns the latest data for this Sensor.
+     * Returns the data for this Sensor.
      *
-     * @return The latest data for this Sensor
+     * @return The data for this Sensor
      */
     public double getData()
     {
         return this.data;
+    }
+
+    /**
+     * Returns the rounded data for this Sensor converted to a String.
+     *
+     * @return The rounded data for this Sensor
+     */
+    public String getRoundedData()
+    {
+        return switch (this)
+        {
+            case SYSTEM_COST_PER_HOUR -> new DecimalFormat("#.###").format(this.data);
+            default -> String.valueOf(Math.round(this.data));
+        };
     }
 
     /**

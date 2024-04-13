@@ -5,9 +5,7 @@ import static src.util.Logger.logError;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.FontMetrics;
-import java.awt.geom.Rectangle2D;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -19,6 +17,7 @@ import javax.imageio.ImageIO;
 
 import src.Constants;
 import src.Sensor;
+import src.util.Utils;
 
 /**
  * This class creates a thermostat.
@@ -160,11 +159,9 @@ public final class Thermostat extends Figure
         g2d.setClip(null);
         g2d.setColor(Color.WHITE);
 
-        //calculate the font size
-        String value = String.valueOf(Math.round(this.sensor.getData())) + this.sensor.unit();
-        Font font = g2d.getFont();
-        Rectangle2D rect = g2d.getFontMetrics(font).getStringBounds(value + "0", g2d);
-        g2d.setFont(font.deriveFont((float)((double)font.getSize2D() * (diameter - this.thermWidth)/rect.getWidth())));
+        //set the font size
+        String value = this.sensor.getRoundedData() + this.sensor.unit();
+        Utils.setFontFromWidth(g2d, value + "0", diameter - this.thermWidth);
 
         //display the sensor's value in the center
         FontMetrics metrics = g2d.getFontMetrics();
@@ -173,10 +170,7 @@ public final class Thermostat extends Figure
                        (int)(this.getHeight() - radius + metrics.getAscent()/3));
 
         //display the icon in the upper right
-        if (this.icon != null)
-        {
-            g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
-            g2d.drawImage(this.icon, this.getWidth() - this.icon.getWidth(null), 0, null);
-        }
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2d.drawImage(this.icon, this.getWidth() - this.icon.getWidth(null), 0, null);
     }
 }

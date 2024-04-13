@@ -4,6 +4,9 @@ import static src.util.Logger.log;
 import static src.util.Logger.logError;
 import static src.util.Logger.logWarning;
 
+import java.awt.Font;
+import java.awt.geom.Rectangle2D;
+import java.awt.Graphics2D;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.io.IOException;
@@ -16,8 +19,8 @@ import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import java.util.TimerTask;
 
-import javax.swing.UIManager;
 import javax.swing.plaf.FontUIResource;
+import javax.swing.UIManager;
 
 /**
  * A class to hold various, non-related utilities.
@@ -28,6 +31,53 @@ public final class Utils
      * Prevents instantiation of this class.
      */
     private Utils() {}
+
+    /**
+     * Sets the graphic's font to the largest size possible while still fitting the given text into the given pixel width.
+     *
+     * @param g2d The graphics context to set the font of
+     * @param text The text that will be displayed. This need not be the exact text to be displayed, but can, for example, be text
+     *             of the largest expected length for a component to keep the text a consistent size as the length changes.
+     * @param pixelWidth The number of pixels wide that is available to draw the text
+     */
+    public static void setFontFromWidth(Graphics2D g2d, String text, int pixelWidth)
+    {
+        Font font = g2d.getFont();
+        Rectangle2D rect = g2d.getFontMetrics(font).getStringBounds(text, g2d);
+        g2d.setFont(font.deriveFont((float)((double)font.getSize2D() * pixelWidth/rect.getWidth())));
+    }
+
+    /**
+     * Sets the graphic's font to the largest size possible while still fitting the given text into the given pixel height.
+     *
+     * @param g2d The graphics context to set the font of
+     * @param text The text that will be displayed. This need not be the exact text to be displayed, but can, for example, be text
+     *             of the largest expected length for a component to keep the text a consistent size as the length changes.
+     * @param pixelHeight The number of pixels high that is available to draw the text
+     */
+    public static void setFontFromHeight(Graphics2D g2d, String text, int pixelHeight)
+    {
+        Font font = g2d.getFont();
+        Rectangle2D rect = g2d.getFontMetrics(font).getStringBounds(text, g2d);
+        g2d.setFont(font.deriveFont((float)((double)font.getSize2D() * pixelHeight/rect.getHeight())));
+    }
+
+    /**
+     * Sets the graphic's font to the largest size possible while still fitting the given text into the given pixel width and height.
+     *
+     * @param g2d The graphics context to set the font of
+     * @param text The text that will be displayed. This need not be the exact text to be displayed, but can, for example, be text
+     *             of the largest expected length for a component to keep the text a consistent size as the length changes.
+     * @param pixelWidth The number of pixels wide that is available to draw the text
+     * @param pixelHeight The number of pixels high that is available to draw the text
+     */
+    public static void setFontFromWidthAndHeight(Graphics2D g2d, String length, int pixelWidth, int pixelHeight)
+    {
+        Font font = g2d.getFont();
+        Rectangle2D rect = g2d.getFontMetrics(font).getStringBounds(length, g2d);
+        g2d.setFont(font.deriveFont((float)Math.min(((double)font.getSize2D() * pixelWidth/rect.getWidth()),
+                                                    ((double)font.getSize2D() * pixelHeight/rect.getHeight()))));
+    }
 
     /**
      * Sets the global default font for the program.

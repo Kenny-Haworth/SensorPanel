@@ -7,10 +7,10 @@ import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
-import java.awt.geom.Rectangle2D;
 
 import src.Constants;
 import src.Sensor;
+import src.util.Utils;
 
 /**
  * This class creates a modern, smooth gauge.
@@ -79,17 +79,14 @@ public final class SleekGauge extends Figure
                      (int)(heightY - (this.gaugeWidth * heightY/this.getHeight())),
                      this.gaugeWidth, this.gaugeWidth);
 
-        //calculate the font size
-        int fontWidthPixels = this.getWidth() - this.gaugeWidth * 4;
-        Font font = g2d.getFont();
-        Rectangle2D rect = g2d.getFontMetrics(font).getStringBounds("100", g2d);
-        g2d.setFont(font.deriveFont((float)((double)font.getSize2D() * fontWidthPixels/rect.getWidth())));
+        //set the font size
+        Utils.setFontFromWidth(g2d, "100", this.getWidth() - this.gaugeWidth * 4);
 
         //display the sensor's value in the center
         FontMetrics metrics = g2d.getFontMetrics();
-        String value = String.valueOf(Math.round(this.sensor.getData()));
-        g2d.drawString(value,
-                       this.getWidth()/2 - metrics.stringWidth(value)/2,
+        String data = this.sensor.getRoundedData();
+        g2d.drawString(data,
+                       this.getWidth()/2 - metrics.stringWidth(data)/2,
                        this.getHeight()/2 + metrics.getAscent()/3);
 
         //display the units at the bottom
