@@ -71,10 +71,10 @@ public final class Utils
      * @param pixelWidth The number of pixels wide that is available to draw the text
      * @param pixelHeight The number of pixels high that is available to draw the text
      */
-    public static void setFontFromWidthAndHeight(Graphics2D g2d, String length, int pixelWidth, int pixelHeight)
+    public static void setFontFromWidthAndHeight(Graphics2D g2d, String text, int pixelWidth, int pixelHeight)
     {
         Font font = g2d.getFont();
-        Rectangle2D rect = g2d.getFontMetrics(font).getStringBounds(length, g2d);
+        Rectangle2D rect = g2d.getFontMetrics(font).getStringBounds(text, g2d);
         g2d.setFont(font.deriveFont((float)Math.min(((double)font.getSize2D() * pixelWidth/rect.getWidth()),
                                                     ((double)font.getSize2D() * pixelHeight/rect.getHeight()))));
     }
@@ -125,59 +125,32 @@ public final class Utils
     /**
      * Launches the given program.
      *
-     * This method first ensures the executable exists and the program is not already running.
+     * This method ensures the executable exists before attempting to launch it.
      *
-     * @param path The full path to the program, excluding the executable
-     * @param executable The executable name
+     * @param fullPath The full path to the program
+     * @param allowMultipleInstances False to only launch the program if it is not already running,
+     *                               true to allow multiple instances
      */
-    public static void launchProgram(String path, String executable)
+    public static void launchProgram(String fullPath, boolean allowMultipleInstances)
     {
         //ensure the executable exists
-        String fullPath = path + "\\" + executable;
         if (!Files.exists(Paths.get(fullPath)))
         {
             logWarning("The executable \"" + fullPath + "\" does not exist, so the program cannot be started.");
             return;
         }
 
-        //check if the program is already running
-        try
+        String executable = fullPath.substring(fullPath.lastIndexOf('/') + 1);
+
+        //the program does not need to be started because it is already running
+        if (!allowMultipleInstances && programRunning(executable))
         {
-            Process process = new ProcessBuilder("cmd", "/c", "tasklist /fi \"imagename eq " + executable + "\"")
-                              .redirectErrorStream(true).start();
-
-            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream())))
-            {
-                boolean programRunning = true;
-                String line;
-                while ((line = reader.readLine()) != null)
-                {
-                    //this line indicates no instances of the program are currently running
-                    if ("INFO: No tasks are running which match the specified criteria.".equals(line))
-                    {
-                        programRunning = false;
-                    }
-                }
-
-                int exitCode = process.waitFor();
-                if (exitCode != 0)
-                {
-                    logError("Checking if " + executable + " is alive exited with error code " + exitCode);
-                }
-
-                //the program does not need to be started because it is already running
-                if (programRunning)
-                {
-                    log(executable + " is already running");
-                    return;
-                }
-            }
+            log(executable + " is already running");
+            return;
         }
-        catch (IOException | InterruptedException e)
-        {
-            logError("Unable to determine if " + executable + " is currently running", e);
-            return; //better to not start the program at all than to run it twice
-        }
+
+        //get the path without the executable in it
+        String path = fullPath.substring(0, fullPath.lastIndexOf('/'));
 
         //launch the program
         try
@@ -210,5 +183,106 @@ public final class Utils
         {
             logError("Unable to start " + executable + " automatically", e);
         }
+    }
+
+    /**
+     * Starts a Task Scheduler task to launch a program.
+     *
+     * This method is especially useful to launch programs as another user, something Windows does not have a direct command for.
+     * This can only be done if this Java program was launched with administrative privileges.
+     *
+     * @param taskName The name of the Task Scheduler task to run
+     * @param executable The executable name (unused if allowMultipleInstances is true)
+     * @param allowMultipleInstances False to only launch the program if it is not already running,
+     *                               true to allow multiple instances
+     */
+    public static void runTaskSchedulerTask(String taskName, String executable, boolean allowMultipleInstances)
+    {
+        //the task does not need to be run because the program is already running
+        if (!allowMultipleInstances && programRunning(executable))
+        {
+            log(executable + " is already running");
+            return;
+        }
+
+        //run the task
+        try
+        {
+            Process process = new ProcessBuilder("cmd", "/c", "schtasks /run /tn " + taskName)
+                              .redirectErrorStream(true).start();
+
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream())))
+            {
+                List<String> lines = reader.lines().collect(Collectors.toList());
+
+                //the task started successfully
+                if (lines.size() == 1 &&
+                    lines.get(0).equals("SUCCESS: Attempted to run the scheduled task \"" + taskName + "\"."))
+                {
+                    String name = executable.split("\\.")[0];
+                    log(name + " started successfully");
+                }
+                //something went wrong
+                else
+                {
+                    logWarning("Unexpected output attempting to run " + taskName + " via Task Scheduler: " +
+                                lines.stream().collect(Collectors.joining("\n")));
+                }
+
+                int exitCode = process.waitFor();
+                if (exitCode != 0)
+                {
+                    logError("The Task Scheduler task " + taskName + " exited with error code " + exitCode);
+                }
+            }
+        }
+        catch (IOException | InterruptedException e)
+        {
+            logError("Unable to start Task Scheduler task " + taskName + " automatically", e);
+        }
+    }
+
+    /**
+     * Determines if any instances of the given executable are already running.
+     *
+     * If an exception occurs, this method will log it and return true.
+     *
+     * @param executable The executable to check for instances of
+     * @return True if the given executable is already running, false otherwise
+     */
+    private static boolean programRunning(String executable)
+    {
+        boolean programRunning = true; //assume the program is running by default
+
+        try
+        {
+            Process process = new ProcessBuilder("cmd", "/c", "tasklist /fi \"imagename eq " + executable + "\"")
+                              .redirectErrorStream(true).start();
+
+            try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream())))
+            {
+                String line;
+                while ((line = reader.readLine()) != null)
+                {
+                    //this line indicates no instances of the program are currently running
+                    if ("INFO: No tasks are running which match the specified criteria.".equals(line))
+                    {
+                        programRunning = false;
+                    }
+                }
+
+                int exitCode = process.waitFor();
+                if (exitCode != 0)
+                {
+                    logError("The command to check for any instances of " + executable + " exited with error code " + exitCode);
+                }
+            }
+        }
+        catch (IOException | InterruptedException e)
+        {
+            logError("Unable to determine if " + executable + " is currently running", e);
+        }
+
+        return programRunning;
     }
 }
