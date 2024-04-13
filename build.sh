@@ -5,10 +5,10 @@ set -eu # exit on any error or any unset variable
 javac -Xlint:all,-serial \
       --release 21 \
       -d bin \
-      src/SensorPanel.java
+      $(find src -type f -name "*.java")
 
 # create the jar file
-jar cf bin/SensorPanel.jar $(find bin -type f -name "*.class")
+jar cfe bin/SensorPanel.jar src.SensorPanel -C bin src
 
 # remove the class files
 rm -rf bin/src
