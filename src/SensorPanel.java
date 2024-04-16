@@ -1,6 +1,5 @@
 package src;
 
-import static src.util.Logger.log;
 import static src.util.Logger.logError;
 import static src.util.Logger.logWarning;
 
@@ -61,17 +60,16 @@ public final class SensorPanel
      */
     public static void main(String[] args)
     {
-        //log computer power on time
-        log("Computer powered on.");
-
-        //TODO log computer power off time and total uptime
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> log("Computer powered off.")));
+        //create the main GUI
+        SwingUtilities.invokeLater(SensorPanel::new);
 
         //startup all necessary programs
         handleStartupPrograms();
 
-        //create the main GUI
-        SwingUtilities.invokeLater(SensorPanel::new);
+        //continually update the sensors using values from different programs
+        monitorHwInfoSensors();
+        monitorFanControlSensors();
+        monitorTpLinkSensors();
     }
 
     /**
@@ -143,11 +141,6 @@ public final class SensorPanel
         //show the main frame
         this.frame.add(mainPanel);
         this.frame.setVisible(true);
-
-        //continually update the sensors using values from different programs
-        monitorHwInfoSensors();
-        monitorFanControlSensors();
-        monitorTpLinkSensors();
     }
 
     /**
@@ -184,7 +177,6 @@ public final class SensorPanel
         executor.submit(() -> Utils.launchProgram("C:/Program Files (x86)/MSI Afterburner/MSIAfterburner.exe", false));
         executor.submit(() -> Utils.launchProgram("C:/Program Files (x86)/RivaTuner Statistics Server/RTSS.exe", false));
         executor.submit(() -> Utils.launchProgram("C:/Program Files/HWiNFO64/HWiNFO64.EXE", false));
-        executor.submit(() -> Utils.launchProgram("C:/Program Files/Keyboard Chatter Blocker/KeyboardChatterBlocker.exe", true));
         executor.schedule(() -> Utils.runTaskSchedulerTask("\\Custom\\SignalRGB", "SignalRgbLauncher.exe", false), 5, TimeUnit.SECONDS);
         executor.shutdown();
     }
@@ -283,12 +275,12 @@ public final class SensorPanel
         this.frame.addMouseMotionListener(new MouseMotionAdapter()
         {
             @Override
-            public void mouseDragged(MouseEvent e)
+            public void mouseDragged(MouseEvent event)
             {
                 if (!lockPosition)
                 {
-                    frame.setLocation(frame.getLocation().x + (e.getPoint().x - dragPoint.x),
-                                      frame.getLocation().y + (e.getPoint().y - dragPoint.y));
+                    frame.setLocation(frame.getLocation().x + (event.getPoint().x - dragPoint.x),
+                                      frame.getLocation().y + (event.getPoint().y - dragPoint.y));
                 }
             }
         });
@@ -365,11 +357,11 @@ public final class SensorPanel
                             int index = Integer.parseInt(components[0].substring(8, components[0].length()));
                             double value = Double.parseDouble(components[2]);
 
-                            //convert KB/s to MB/s
+                            //convert KB/s to Mb/s
                             if (Sensor.VALUES[index] == Sensor.INTERNET_DOWNLOAD_USAGE ||
                                 Sensor.VALUES[index] == Sensor.INTERNET_UPLOAD_USAGE)
                             {
-                                value = value/1000;
+                                value *= 0.008;
                             }
 
                             //update the Sensor's value
@@ -395,7 +387,7 @@ public final class SensorPanel
                 logError("Unable to query HwInfo values", e);
             }
         }),
-        5000, //give HwInfo ample time to startup
+        10_000, //give HwInfo ample time to startup
         Constants.UPDATE_RATE_SECONDS * 1000);
     }
 
@@ -462,7 +454,7 @@ public final class SensorPanel
             try
             {
                 //get the sensor value by querying it using kasa
-                Process process = new ProcessBuilder("cmd", "/c", "kasa --host 192.168.0.134 --type plug emeter")
+                Process process = new ProcessBuilder("cmd", "/c", "kasa --host 192.168.0.6 --type plug emeter")
                                   .redirectErrorStream(true).start();
 
                 StringBuilder builder = new StringBuilder();
@@ -483,7 +475,7 @@ public final class SensorPanel
                             Sensor.SYSTEM_POWER_USAGE.set(currentWattage);
 
                             //convert wattage to cost per hour
-                            double costPerHour = currentWattage/1000 * Constants.USD_PER_KWH; //TODO base upon TOU
+                            double costPerHour = currentWattage/1000 * Constants.CENTS_PER_KWH; //TODO base upon TOU
                             Sensor.SYSTEM_COST_PER_HOUR.set(costPerHour);
                         }
                     });

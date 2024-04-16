@@ -85,6 +85,8 @@ public final class Logger
         {
             System.err.println("Critical error! Unable to write to log.log! Stacktrace:\n");
             e.printStackTrace();
+
+            //TODO display this error in InfoWindow.displayError()!
         }
     }
 }

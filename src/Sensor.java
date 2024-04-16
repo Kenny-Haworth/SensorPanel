@@ -23,23 +23,23 @@ import src.figure.Figure;
  */
 public enum Sensor
 {
-    RAM_USAGE                 (Unit.PERCENTAGE,            0,  100,    10,  80),
-    MAX_SINGLE_CORE_CPU_USAGE (Unit.PERCENTAGE,            0,  100,     5,  90), //highest single-core CPU usage
-    COMBINED_CPU_USAGE        (Unit.PERCENTAGE,            0,  100,     0,  80),
-    CPU_TEMPERATURE           (Unit.DEGREES_CELSIUS,      35,   87,    35,  85),
-    CPU_POWER_USAGE           (Unit.WATTS,                 0,  170,    20, 150),
-    GPU_TEMPERATURE           (Unit.DEGREES_CELSIUS,      30,   85,    30,  65),
-    GPU_POWER_USAGE           (Unit.WATTS,                 0,  450,    12, 300),
-    GPU_USAGE                 (Unit.PERCENTAGE,            0,  100,     0,  98),
-    GPU_VRAM_USAGE            (Unit.PERCENTAGE,            0,  100,     0,  80),
-    FPS                       (Unit.FRAMES_PER_SECOND,     0, 1000,    10, 165), //above monitor's refresh rate (165 Hz) indicates GPU is doing unnecessary work
-    INTERNET_DOWNLOAD_USAGE   (Unit.MEGABYTES_PER_SECOND,  0,  600,     0, 300),
-    INTERNET_UPLOAD_USAGE     (Unit.MEGABYTES_PER_SECOND,  0,   30,     0,  15),
-    AIR_TEMPERATURE           (Unit.DEGREES_FAHRENHEIT,   60,  110,    65,  95), //inside the case
-    WATER_TEMPERATURE         (Unit.DEGREES_FAHRENHEIT,   60,  105,    65,  95), //i.e. coolant temperature
-    SYSTEM_POWER_USAGE        (Unit.WATTS,                 0,  800,   100, 650), //total system power usage measured at the outlet
-    SECONDARY_POWER_USAGE     (Unit.WATTS,                 0,  400,    50, 300), //system power usage excluding the CPU and GPU
-    SYSTEM_COST_PER_HOUR      (Unit.DOLLARS,               0,    2, 0.005,   1); //based on total system power usage
+    RAM_USAGE                 (Unit.PERCENTAGE,            0,    100,     0,     95),
+    MAX_SINGLE_CORE_CPU_USAGE (Unit.PERCENTAGE,            0,    100,   7.5,    100), //highest single-core CPU usage
+    COMBINED_CPU_USAGE        (Unit.PERCENTAGE,            0,    100,     0,    100),
+    CPU_TEMPERATURE           (Unit.DEGREES_CELSIUS,      35,     89,    35,     89),
+    CPU_POWER_USAGE           (Unit.WATTS,                 0,    170,    20,    150),
+    GPU_TEMPERATURE           (Unit.DEGREES_CELSIUS,      24,     85,    24,     65),
+    GPU_POWER_USAGE           (Unit.WATTS,                 0,    450,    12,    450),
+    GPU_USAGE                 (Unit.PERCENTAGE,            0,    100,     0,    100),
+    GPU_VRAM_USAGE            (Unit.PERCENTAGE,            0,    100,     0,     80),
+    FPS                       (Unit.FRAMES_PER_SECOND,     0, 10_000,     0, 10_000),
+    INTERNET_DOWNLOAD_USAGE   (Unit.MEGABITS_PER_SECOND,   0,    600,     0,    600),
+    INTERNET_UPLOAD_USAGE     (Unit.MEGABITS_PER_SECOND,   0,     35,     0,     25),
+    AIR_TEMPERATURE           (Unit.DEGREES_FAHRENHEIT,   60,    110,    60,     91), //inside the case
+    WATER_TEMPERATURE         (Unit.DEGREES_FAHRENHEIT,   60,    110,    60,    105), //i.e. coolant temperature
+    SYSTEM_POWER_USAGE        (Unit.WATTS,                 0,   1500,   100,    720), //total system power usage measured at the outlet
+    SECONDARY_POWER_USAGE     (Unit.WATTS,              -500,   1500,  -500,    720), //system power usage excluding the CPU and GPU
+    SYSTEM_COST_PER_HOUR      (Unit.CENTS,                 0,    100,     5,   45.5); //calculated from total system power usage, maximum set from a 720W maximum draw at 65¢ per kwh
 
     //member variables
     protected static final Sensor[] VALUES = Sensor.values(); //saved to avoid expensive copying
@@ -134,7 +134,7 @@ public enum Sensor
     {
         return switch (this)
         {
-            case SYSTEM_COST_PER_HOUR -> new DecimalFormat("#.###").format(this.data);
+            case SYSTEM_COST_PER_HOUR -> new DecimalFormat("##.#").format(this.data);
             default -> String.valueOf(Math.round(this.data));
         };
     }
@@ -172,13 +172,6 @@ public enum Sensor
     @Override
     public String toString()
     {
-        if (this.unit.prepend())
-        {
-            return this.name() + " -> " + this.unit + getData();
-        }
-        else
-        {
-            return this.name() + " -> " + getData() + " " + this.unit;
-        }
+        return this.name() + " -> " + getData() + " " + this.unit;
     }
 }

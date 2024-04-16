@@ -90,8 +90,7 @@ public final class IconField extends Figure
         g2d.setColor(Color.WHITE);
 
         //get the text to display
-        String value = this.sensor.unit().prepend() ? this.sensor.unit() + this.sensor.getRoundedData() :
-                                                      this.sensor.getRoundedData() + " " + this.sensor.unit();
+        String value = this.sensor.getRoundedData() + " " + this.sensor.unit();
         g2d.setFont(g2d.getFont().deriveFont(value.length() <= 7 ? FONT_SIZE : SMALL_FONT_SIZE));
 
         //display the text to the right of the icon, center aligned

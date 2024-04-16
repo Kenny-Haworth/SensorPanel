@@ -17,6 +17,6 @@ public final class Constants
     public static final int FRAME_HEIGHT = 515;
     public static final int UPDATE_RATE_SECONDS = 3;
     public static final Color THEME_COLOR = new Color(41, 171, 250); //a light cyan
-    public static final double USD_PER_KWH = 0.65;
+    public static final double CENTS_PER_KWH = 65;
     public static final Pattern SPLIT_SPACES = Pattern.compile("\\p{Space}+");
 }

@@ -6,25 +6,12 @@ package src;
 public enum Unit
 {
     WATTS,
-    DOLLARS,
+    CENTS,
     PERCENTAGE,
     DEGREES_CELSIUS,
     DEGREES_FAHRENHEIT,
     FRAMES_PER_SECOND,
-    MEGABYTES_PER_SECOND;
-
-    /**
-     * Whether this unit should be prepended or appended to the value.
-     * If a unit should not be prepended, it should be appended.
-     *
-     * For example, "%" should be at the end of a value (83%) but "$" should be at the beginning of a value "$35".
-     *
-     * @return True if this unit should be prepended, false if it should be appended
-     */
-    public boolean prepend()
-    {
-        return this == DOLLARS;
-    }
+    MEGABITS_PER_SECOND;
 
     @Override
     public String toString()
@@ -32,12 +19,12 @@ public enum Unit
         return switch (this)
         {
             case WATTS -> "W";
-            case DOLLARS -> "$";
+            case CENTS -> "¢";
             case PERCENTAGE -> "%";
             case DEGREES_CELSIUS -> "°C";
             case DEGREES_FAHRENHEIT -> "°F";
             case FRAMES_PER_SECOND -> "fps";
-            case MEGABYTES_PER_SECOND -> "MB/s";
+            case MEGABITS_PER_SECOND -> "Mb/s";
         };
     }
 }
