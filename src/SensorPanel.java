@@ -34,6 +34,7 @@ import javax.swing.JPopupMenu;
 import javax.swing.plaf.FontUIResource;
 import javax.swing.SwingUtilities;
 
+import src.figure.IconField;
 import src.figure.SleekGauge;
 import src.figure.Thermostat;
 import src.util.Utils;
@@ -88,17 +89,26 @@ public final class SensorPanel
         //construct all components that will be part of the main frame
         SleekGauge singleCoreCpuUsage = new SleekGauge(Sensor.MAX_SINGLE_CORE_CPU_USAGE);
         SleekGauge combinedCpuUsage = new SleekGauge(Sensor.COMBINED_CPU_USAGE);
-        Thermostat airTherm = new Thermostat(Sensor.AIR_TEMPERATURE, "res/air.jpg");
+        Thermostat airTherm = new Thermostat(Sensor.AIR_TEMPERATURE, "res/air.png");
         Thermostat waterTherm = new Thermostat(Sensor.WATER_TEMPERATURE, "res/water.png");
+        IconField systemPowerUsage = new IconField(Sensor.SYSTEM_POWER_USAGE, "res/lightning_bolt.jpg");
+        IconField secondaryPowerUsage = new IconField(Sensor.SECONDARY_POWER_USAGE, "res/motherboard.png");
+        IconField costPerHour = new IconField(Sensor.SYSTEM_COST_PER_HOUR, "res/money.png");
+        IconField fps = new IconField(Sensor.FPS, "res/fps.png");
+        IconField internetUpload = new IconField(Sensor.INTERNET_UPLOAD_USAGE, "res/up.png");
+        IconField internetDownload = new IconField(Sensor.INTERNET_DOWNLOAD_USAGE, "res/down.png");
 
-        //add all the components to the main panel
+        //create the main panel to add all components to
         JPanel mainPanel = new JPanel(new GridBagLayout());
         mainPanel.setBackground(Color.BLACK);
 
+        //add all the components to the main panel
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.weightx = 1;
         gbc.gridx = 0;
         gbc.gridy = 0;
+        gbc.weightx = 1;
+        gbc.weighty = 1;
+        gbc.gridheight = 6;
 
         mainPanel.add(singleCoreCpuUsage, gbc);
 
@@ -106,11 +116,29 @@ public final class SensorPanel
         mainPanel.add(combinedCpuUsage, gbc);
 
         gbc.gridx = 2;
-        gbc.gridheight = 2;
         mainPanel.add(airTherm, gbc);
 
         gbc.gridx = 3;
         mainPanel.add(waterTherm, gbc);
+
+        gbc.gridx = 4;
+        gbc.gridheight = 1;
+        mainPanel.add(systemPowerUsage, gbc);
+
+        gbc.gridy++;
+        mainPanel.add(secondaryPowerUsage, gbc);
+
+        gbc.gridy++;
+        mainPanel.add(costPerHour, gbc);
+
+        gbc.gridy++;
+        mainPanel.add(fps, gbc);
+
+        gbc.gridy++;
+        mainPanel.add(internetUpload, gbc);
+
+        gbc.gridy++;
+        mainPanel.add(internetDownload, gbc);
 
         //show the main frame
         this.frame.add(mainPanel);
