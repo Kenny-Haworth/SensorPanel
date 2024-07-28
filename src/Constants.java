@@ -19,4 +19,20 @@ public final class Constants
     public static final Color THEME_COLOR = new Color(41, 171, 250); //a light cyan
     public static final double CENTS_PER_KWH = 65;
     public static final Pattern SPLIT_SPACES = Pattern.compile("\\p{Space}+");
+
+    /**
+     * Groups similar constants for borders.
+     */
+    public static final class Border
+    {
+        /**
+         * Prevents instantiation of this class.
+         */
+        private Border() {}
+
+        public static final Color COLOR = THEME_COLOR;
+        public static final int ROUNDNESS = 75;
+        public static final int THICKNESS = 4;
+        public static final int SEPARATION = 6;
+    }
 }

@@ -35,18 +35,14 @@ public final class Thermostat extends Figure
      *
      * @param sensor The sensor to display the data of
      * @param iconPath The path to an icon to display
+     * @param size The size to set this thermostat
      */
-    public Thermostat(Sensor sensor, String iconPath)
+    public Thermostat(Sensor sensor, String iconPath, Dimension size)
     {
         super(sensor);
         this.sensor = sensor;
         this.setBackground(Color.BLACK);
-
-        int prefWidth = (int)(Constants.FRAME_WIDTH * 0.1285);
-
-        //make this panel stretch the height of two figures and the width of 1 figure
-        this.setPreferredSize(new Dimension(prefWidth,
-                                            (int)(Constants.FRAME_HEIGHT * 0.9)));
+        this.setPreferredSize(size);
 
         //make the thermometer's width a percentage of the width of this panel
         this.thermWidth = (int)(this.getPreferredSize().width * 0.035);
@@ -57,8 +53,8 @@ public final class Thermostat extends Figure
         try
         {
             //resize the icon to be 30% of the panel's width
-            iconTmp = ImageIO.read(new File(iconPath)).getScaledInstance((int)(prefWidth * 0.3),
-                                                                         (int)(prefWidth * 0.3),
+            iconTmp = ImageIO.read(new File(iconPath)).getScaledInstance((int)(size.getWidth() * 0.3),
+                                                                         (int)(size.getWidth() * 0.3),
                                                                          Image.SCALE_SMOOTH);
         }
         catch (IOException e)

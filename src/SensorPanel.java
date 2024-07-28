@@ -4,6 +4,7 @@ import static src.util.Logger.logError;
 import static src.util.Logger.logWarning;
 
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseMotionAdapter;
@@ -36,6 +37,7 @@ import javax.swing.SwingUtilities;
 import src.figure.IconField;
 import src.figure.SleekGauge;
 import src.figure.Thermostat;
+import src.util.RoundedPanel;
 import src.util.Utils;
 
 /**
@@ -84,11 +86,120 @@ public final class SensorPanel
         this.frame = new JFrame("Sensor Panel");
         setupMainFrame();
 
+        //create the main panel and display the frame
+        this.frame.add(createMainPanel());
+        this.frame.setVisible(true);
+    }
+
+    /**
+     * Creates all Figures and arranges them on a main panel.
+     *
+     * @return The main panel
+     */
+    private static JPanel createMainPanel()
+    {
+        //create the main panel to add all components to
+        JPanel mainPanel = new JPanel(new GridBagLayout());
+        mainPanel.setBackground(Color.BLACK);
+
         //construct all components that will be part of the main frame
-        SleekGauge singleCoreCpuUsage = new SleekGauge(Sensor.MAX_SINGLE_CORE_CPU_USAGE);
-        SleekGauge combinedCpuUsage = new SleekGauge(Sensor.COMBINED_CPU_USAGE);
-        Thermostat airTherm = new Thermostat(Sensor.AIR_TEMPERATURE, "res/air.png");
-        Thermostat waterTherm = new Thermostat(Sensor.WATER_TEMPERATURE, "res/water.png");
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.NONE;
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        gbc.weightx = 0.57;
+        gbc.weighty = 0.5;
+        gbc.gridwidth = 2;
+
+        //CPU panel
+        RoundedPanel cpuPanel = createRoundedPanel(gbc);
+        mainPanel.add(cpuPanel, gbc);
+        int gaugeWidth = cpuPanel.getPreferredSize().height - cpuPanel.getBorderUsage();
+
+        //CPU sensors
+        SleekGauge singleCoreCpuUsage = new SleekGauge(Sensor.MAX_SINGLE_CORE_CPU_USAGE, gaugeWidth);
+        SleekGauge combinedCpuUsage = new SleekGauge(Sensor.COMBINED_CPU_USAGE, gaugeWidth);
+        SleekGauge cpuTemperature = new SleekGauge(Sensor.CPU_TEMPERATURE, gaugeWidth);
+
+        GridBagConstraints cpuGbc = new GridBagConstraints();
+        cpuGbc.fill = GridBagConstraints.NONE;
+        cpuGbc.gridx = 0;
+        cpuGbc.gridy = 0;
+        cpuGbc.weightx = 1;
+
+        cpuPanel.add(singleCoreCpuUsage, cpuGbc);
+        cpuGbc.gridx++;
+        cpuPanel.add(combinedCpuUsage, cpuGbc);
+        cpuGbc.gridx++;
+        cpuPanel.add(cpuTemperature, cpuGbc);
+
+        //RAM panel
+        gbc.gridy = 1;
+        gbc.gridwidth = 1;
+        gbc.weightx = 0.19;
+
+        RoundedPanel ramPanel = createRoundedPanel(gbc);
+        mainPanel.add(ramPanel, gbc);
+
+        //RAM sensors
+        //TODO
+
+        //GPU panel
+        gbc.gridx = 1;
+        gbc.weightx = 0.38;
+
+        RoundedPanel gpuPanel = createRoundedPanel(gbc);
+        mainPanel.add(gpuPanel, gbc);
+
+        //GPU sensors
+        SleekGauge gpuUsage = new SleekGauge(Sensor.GPU_USAGE, gaugeWidth);
+        SleekGauge gpuTemperature = new SleekGauge(Sensor.GPU_TEMPERATURE, gaugeWidth);
+
+        GridBagConstraints gpuGbc = new GridBagConstraints();
+        gpuGbc.fill = GridBagConstraints.NONE;
+        gpuGbc.gridx = 0;
+        gpuGbc.gridy = 0;
+        gpuGbc.weightx = 1;
+
+        gpuPanel.add(gpuUsage, gpuGbc);
+        gpuGbc.gridx++;
+        gpuPanel.add(gpuTemperature, gpuGbc);
+
+        //Thermostat panel
+        gbc.gridx = 2;
+        gbc.gridy = 0;
+        gbc.weightx = 0.28;
+        gbc.weighty = 1;
+        gbc.gridheight = 2;
+
+        RoundedPanel thermostatPanel = createRoundedPanel(gbc);
+        mainPanel.add(thermostatPanel, gbc);
+
+        //calculate the size to set both thermostats
+        Dimension dimension = new Dimension(thermostatPanel.getPreferredSize().width/2 - thermostatPanel.getBorderUsage() * 2,
+                                            thermostatPanel.getPreferredSize().height - thermostatPanel.getBorderUsage());
+
+        //Thermostat sensors
+        Thermostat airTherm = new Thermostat(Sensor.AIR_TEMPERATURE, "res/air.png", dimension);
+        Thermostat waterTherm = new Thermostat(Sensor.WATER_TEMPERATURE, "res/water.png", dimension);
+
+        GridBagConstraints thermGbc = new GridBagConstraints();
+        thermGbc.fill = GridBagConstraints.NONE;
+        thermGbc.gridx = 0;
+        thermGbc.gridy = 0;
+
+        thermostatPanel.add(airTherm, thermGbc);
+        thermGbc.gridx++;
+        thermostatPanel.add(waterTherm, thermGbc);
+
+        //Field panel
+        gbc.gridx = 3;
+        gbc.weightx = 0.15;
+
+        RoundedPanel fieldPanel = createRoundedPanel(gbc);
+        mainPanel.add(fieldPanel, gbc);
+
+        //Field sensors
         IconField systemPowerUsage = new IconField(Sensor.SYSTEM_POWER_USAGE, "res/lightning_bolt.jpg");
         IconField secondaryPowerUsage = new IconField(Sensor.SECONDARY_POWER_USAGE, "res/motherboard.png");
         IconField costPerHour = new IconField(Sensor.SYSTEM_COST_PER_HOUR, "res/money.png");
@@ -96,51 +207,40 @@ public final class SensorPanel
         IconField internetUpload = new IconField(Sensor.INTERNET_UPLOAD_USAGE, "res/up.png");
         IconField internetDownload = new IconField(Sensor.INTERNET_DOWNLOAD_USAGE, "res/down.png");
 
-        //create the main panel to add all components to
-        JPanel mainPanel = new JPanel(new GridBagLayout());
-        mainPanel.setBackground(Color.BLACK);
+        GridBagConstraints fieldGbc = new GridBagConstraints();
+        fieldGbc.gridx = 0;
+        fieldGbc.gridy = 0;
 
-        //add all the components to the main panel
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.weightx = 1;
-        gbc.weighty = 1;
-        gbc.gridheight = 6;
+        fieldPanel.add(systemPowerUsage, fieldGbc);
+        fieldGbc.gridy++;
+        fieldPanel.add(secondaryPowerUsage, fieldGbc);
+        fieldGbc.gridy++;
+        fieldPanel.add(costPerHour, fieldGbc);
+        fieldGbc.gridy++;
+        fieldPanel.add(fps, fieldGbc);
+        fieldGbc.gridy++;
+        fieldPanel.add(internetUpload, fieldGbc);
+        fieldGbc.gridy++;
+        fieldPanel.add(internetDownload, fieldGbc);
 
-        mainPanel.add(singleCoreCpuUsage, gbc);
+        return mainPanel;
+    }
 
-        gbc.gridx = 1;
-        mainPanel.add(combinedCpuUsage, gbc);
-
-        gbc.gridx = 2;
-        mainPanel.add(airTherm, gbc);
-
-        gbc.gridx = 3;
-        mainPanel.add(waterTherm, gbc);
-
-        gbc.gridx = 4;
-        gbc.gridheight = 1;
-        mainPanel.add(systemPowerUsage, gbc);
-
-        gbc.gridy++;
-        mainPanel.add(secondaryPowerUsage, gbc);
-
-        gbc.gridy++;
-        mainPanel.add(costPerHour, gbc);
-
-        gbc.gridy++;
-        mainPanel.add(fps, gbc);
-
-        gbc.gridy++;
-        mainPanel.add(internetUpload, gbc);
-
-        gbc.gridy++;
-        mainPanel.add(internetDownload, gbc);
-
-        //show the main frame
-        this.frame.add(mainPanel);
-        this.frame.setVisible(true);
+    /**
+     * Creates a RoundedPanel with standard settings for the main panel.
+     *
+     * @param gbc To set the RoundedPanel's width and height based upon the gbc's weightx and weighty.
+     * @return A RoundedPanel
+     */
+    private static final RoundedPanel createRoundedPanel(GridBagConstraints gbc)
+    {
+        RoundedPanel panel = new RoundedPanel(Constants.Border.ROUNDNESS, Constants.Border.THICKNESS, Constants.Border.SEPARATION);
+        panel.setLayout(new GridBagLayout());
+        panel.setBackground(Color.BLACK);
+        panel.setForeground(Constants.Border.COLOR);
+        panel.setPreferredSize(new Dimension((int)(Constants.FRAME_WIDTH * gbc.weightx),
+                                             (int)(Constants.FRAME_HEIGHT * gbc.weighty)));
+        return panel;
     }
 
     /**

@@ -25,16 +25,14 @@ public final class SleekGauge extends Figure
      * Creates a new SleekGauge.
      *
      * @param sensor The sensor who's values should be displayed on this gauge
+     * @param width The pixel width and height to set for the SleekGauge, which is square in size
      */
-    public SleekGauge(Sensor sensor)
+    public SleekGauge(Sensor sensor, int width)
     {
         super(sensor);
         this.sensor = sensor;
         this.setBackground(Color.BLACK);
-
-        //make this panel 45% of the height of the frame and square in size
-        this.setPreferredSize(new Dimension((int)(Constants.FRAME_HEIGHT * 0.45),
-                                            (int)(Constants.FRAME_HEIGHT * 0.45)));
+        this.setPreferredSize(new Dimension(width, width));
 
         //make the gauge width 8% of the width of this panel
         this.gaugeWidth = (int)(this.getPreferredSize().width * 0.08);
