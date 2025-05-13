@@ -13,13 +13,15 @@ import src.figure.Figure;
  *      • Sensors can be hardware or software related
  *      • Sensors can be updated at different rates
  *      • Each Sensor stores the latest data it received
- *      • Each Sensor can be associated with one and only one Figure, which will be repainted when the Sensor is updated
+ *      • Each Sensor can be associated with one and only one Figure which will be repainted automatically when the Sensor is
+ *        updated
  *      • A Sensor's min and max indicate the smallest and largest values that Figures should expect
  *          ◦ Some Figures, such as IconField, may not use these values, but it is important for other Figures such as gauges and
  *            thermostats
  *      • A Sensor's warning min and max indicate values in a concerning range (such as high temperatures) but which are not
  *        outside the range of what the Sensor could report
  */
+@SuppressWarnings("java:S3066") //this enum is designed to have a mutable, thread-safe state (with up to 1 setter and many getters)
 public enum Sensor
 {
     RAM_USAGE                 (Unit.PERCENTAGE,            0,    100,     0,     95),
@@ -48,7 +50,7 @@ public enum Sensor
     private final double warningMax; //the value above which warnings should be emitted
     private final Unit unit; //the Unit for this Sensor
     private volatile double data; //the raw data for this Sensor
-    private Figure figure; //the Figure this Sensor is displayed on
+    private volatile Figure figure; //the Figure this Sensor is displayed on - NOSONAR, the object's state is NOT updated here
 
     /**
      * Creates a new Sensor.
@@ -111,7 +113,7 @@ public enum Sensor
         }
 
         //repaint the figure
-        this.figure.repaint();
+        this.figure.repaint(); //thread safe
     }
 
     /**

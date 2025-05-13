@@ -43,9 +43,6 @@ import src.util.Utils;
 /**
  * A custom Sensor Panel for a display within a Windows gaming computer.
  *
- * This program supports the following features:
- *      • TODO
- *
  * See Sensor.java for a list of supported sensors.
  */
 public final class SensorPanel
@@ -254,12 +251,12 @@ public final class SensorPanel
      * privileges without requiring an administrative password. While the tool doesn't do this automatically upon a user logging
      * in, it's a simple matter to use Task Scheduler to run RunAsTool when the user logs in to start the necessary programs with
      * administrative privileges. The drawback to this is that it fires a UAC prompt for every program it starts - which can
-     * quickly become obnoxious to press "Yes" for every program desired to be launched when logging in.
+     * quickly become obnoxious to press "Yes" for every administrative program desired to be launched when logging in.
      *
-     * As SensorPanel is started with administrative privileges, any programs it starts up will be started with administrative
-     * privileges as well, and these programs can run with GUIs. Thus, only the SensorPanel itself is started using RunAsTool via
-     * Task Scheduler, and it starts the rest of the programs requiring administrative privileges, allowing there to be only a
-     * single UAC prompt.
+     * A simple workaround to this is have SensorPanel launch all administrative programs. As SensorPanel is started with
+     * administrative privileges, any programs it starts up will be started with administrative privileges as well, and these
+     * programs can run with GUIs. Thus, only the SensorPanel itself is started using RunAsTool via Task Scheduler, and it starts
+     * the rest of the programs requiring administrative privileges, allowing there to be only a single UAC prompt.
      *
      * This leaves one last issue - some programs must start under a standard user's account (non-admin) but must start after an
      * admin program has started. An example of this is FanControl and SignalRGB. FanControl must launch before SignalRGB does,
@@ -272,13 +269,20 @@ public final class SensorPanel
      */
     private static void handleStartupPrograms()
     {
-        ScheduledExecutorService executor = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors());
-        executor.submit(() -> Utils.launchProgram("C:/Program Files (x86)/FanControl/FanControl.exe", false));
-        executor.submit(() -> Utils.launchProgram("C:/Program Files (x86)/MSI Afterburner/MSIAfterburner.exe", false));
-        executor.submit(() -> Utils.launchProgram("C:/Program Files (x86)/RivaTuner Statistics Server/RTSS.exe", false));
-        executor.submit(() -> Utils.launchProgram("C:/Program Files/HWiNFO64/HWiNFO64.EXE", false));
-        executor.schedule(() -> Utils.runTaskSchedulerTask("\\Custom\\SignalRGB", "SignalRgbLauncher.exe", false), 5, TimeUnit.SECONDS);
-        executor.shutdown();
+        //spawn a new thread as ExecutorService's AutoCloseable is blocking
+        new Thread(() ->
+        {
+            try (ScheduledExecutorService executor = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors()))
+            {
+                executor.submit(() -> Utils.launchProgram("C:/Program Files (x86)/FanControl/FanControl.exe", false));
+                executor.submit(() -> Utils.launchProgram("C:/Program Files (x86)/MSI Afterburner/MSIAfterburner.exe", false));
+                executor.submit(() -> Utils.launchProgram("C:/Program Files (x86)/RivaTuner Statistics Server/RTSS.exe", false));
+                executor.submit(() -> Utils.launchProgram("C:/Program Files/HWiNFO64/HWiNFO64.EXE", false));
+                executor.schedule(() -> Utils.runTaskSchedulerTask("\\Custom\\SignalRGB", "SignalRgbLauncher.exe", false), 5, TimeUnit.SECONDS);
+            }
+        },
+        "Launch Startup Programs")
+        .start();
     }
 
     /**
@@ -315,13 +319,13 @@ public final class SensorPanel
                     //add an option to toggle the frame being always on top
                     JCheckBoxMenuItem onTopItem = new JCheckBoxMenuItem("Always on Top");
                     onTopItem.setSelected(frame.isAlwaysOnTop());
-                    onTopItem.addActionListener(e -> frame.setAlwaysOnTop(onTopItem.isSelected()));
+                    onTopItem.addActionListener(_ -> frame.setAlwaysOnTop(onTopItem.isSelected()));
 
                     //add an option to display the frame's border
                     JCheckBoxMenuItem borderItem = new JCheckBoxMenuItem("Display Border");
                     JCheckBoxMenuItem resizeItem = new JCheckBoxMenuItem("Frame Resizable");
                     borderItem.setSelected(!frame.isUndecorated());
-                    borderItem.addActionListener(e ->
+                    borderItem.addActionListener(_ ->
                     {
                         if (!borderItem.isSelected())
                         {
@@ -336,7 +340,7 @@ public final class SensorPanel
 
                     //add an option to toggle allowing the frame to resize
                     resizeItem.setSelected(frame.isResizable());
-                    resizeItem.addActionListener(e ->
+                    resizeItem.addActionListener(_ ->
                     {
                         if (frame.isUndecorated() && resizeItem.isSelected())
                         {
@@ -351,11 +355,11 @@ public final class SensorPanel
                     //add an option to toggle locking the position of the frame
                     JCheckBoxMenuItem positionItem = new JCheckBoxMenuItem("Lock Position");
                     positionItem.setSelected(lockPosition);
-                    positionItem.addActionListener(e -> lockPosition = !lockPosition);
+                    positionItem.addActionListener(_ -> lockPosition = !lockPosition);
 
                     //add an option to reset the frame to its default size and position
                     JMenuItem resetItem = new JMenuItem("Reset Frame");
-                    resetItem.addActionListener(e -> resetFrame());
+                    resetItem.addActionListener(_ -> resetFrame());
 
                     //construct all the components into the popup menu
                     JPopupMenu popupMenu = new JPopupMenu();
@@ -575,7 +579,7 @@ public final class SensorPanel
                             Sensor.SYSTEM_POWER_USAGE.set(currentWattage);
 
                             //convert wattage to cost per hour
-                            double costPerHour = currentWattage/1000 * Constants.CENTS_PER_KWH; //TODO base upon TOU
+                            double costPerHour = currentWattage/1000 * Constants.CENTS_PER_KWH;
                             Sensor.SYSTEM_COST_PER_HOUR.set(costPerHour);
                         }
                     });

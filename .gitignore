@@ -1,4 +1,7 @@
 *.log
 *.txt
+*.png
+*.jar
+*.exe
 bin
 .vscode
