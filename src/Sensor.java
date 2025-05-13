@@ -1,6 +1,5 @@
 package src;
 
-import static src.util.Logger.logError;
 import static src.util.Logger.logWarning;
 
 import java.text.DecimalFormat;
@@ -94,21 +93,21 @@ public enum Sensor
         //warn about values outside the warning threshold
         if (this.data > this.warningMax)
         {
-            logWarning("Value larger than warning max: " + this);
+            logWarning("High " + this);
         }
         else if (this.data < this.warningMin)
         {
-            logWarning("Value smaller than warning min: " + this);
+            logWarning("Low " + this);
         }
 
         //warn about values outside the max and min
         if (this.data > this.max)
         {
-            logError("Value larger than Sensor maximum: " + this);
+            logWarning("Critically high " + this);
         }
         else if (this.data < this.min)
         {
-            logError("Value smaller than Sensor minimum: " + this);
+            logWarning("Critically low " + this);
         }
 
         //repaint the figure
@@ -172,6 +171,6 @@ public enum Sensor
     @Override
     public String toString()
     {
-        return this.name() + " -> " + getData() + " " + this.unit;
+        return this.name().replace('_', ' ') + " " + getData() + " " + this.unit;
     }
 }
