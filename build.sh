@@ -3,7 +3,8 @@ set -eu # exit on any error or any unset variable
 
 # build the project
 javac -Xlint:all,-serial \
-      --release 21 \
+      --enable-preview \
+      --release 23 \
       -d bin \
       $(find src -type f -name "*.java")
 
