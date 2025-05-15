@@ -20,6 +20,7 @@ import src.figure.Figure;
  *            thermostats
  *      • A Sensor's warning min and max indicate values in a concerning range (such as high temperatures) but which are not
  *        outside the range of what the Sensor could report
+ *      • The order Sensor values are declared matters - it must match the same order Sensors are exported in HwInfo
  */
 @SuppressWarnings("java:S3066") //this enum is designed to have a mutable, thread-safe state (with up to 1 setter and many getters)
 public enum Sensor
@@ -32,7 +33,7 @@ public enum Sensor
     GPU_TEMPERATURE           (Unit.DEGREES_CELSIUS,      24,     85,    24,     65),
     GPU_POWER_USAGE           (Unit.WATTS,                 0,    450,    12,    450),
     GPU_USAGE                 (Unit.PERCENTAGE,            0,    100,     0,    100),
-    GPU_VRAM_USAGE            (Unit.PERCENTAGE,            0,    100,     0,     80),
+    VRAM_USAGE                (Unit.PERCENTAGE,            0,    100,     0,     95),
     FPS                       (Unit.FRAMES_PER_SECOND,     0, 10_000,     0, 10_000),
     INTERNET_DOWNLOAD_USAGE   (Unit.MEGABITS_PER_SECOND,   0,    600,     0,    600),
     INTERNET_UPLOAD_USAGE     (Unit.MEGABITS_PER_SECOND,   0,     35,     0,     25),

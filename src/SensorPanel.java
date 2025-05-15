@@ -5,36 +5,37 @@ import static src.util.Logger.logWarning;
 
 import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseMotionAdapter;
 import java.awt.Font;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseMotionAdapter;
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.util.Arrays;
+import java.util.Timer;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-import java.util.Timer;
 
 import javax.swing.JCheckBoxMenuItem;
 import javax.swing.JFrame;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
-import javax.swing.plaf.FontUIResource;
 import javax.swing.SwingUtilities;
+import javax.swing.plaf.FontUIResource;
 
 import src.figure.IconField;
+import src.figure.SleekBar;
 import src.figure.SleekGauge;
 import src.figure.Thermostat;
 import src.util.RoundedPanel;
@@ -101,17 +102,55 @@ public final class SensorPanel
 
         //construct all components that will be part of the main frame
         GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.NONE;
         gbc.gridx = 0;
         gbc.gridy = 0;
-        gbc.weightx = 0.57;
-        gbc.weighty = 0.5;
-        gbc.gridwidth = 2;
+        gbc.weightx = 0.15;
+        gbc.weighty = 1.0;
+        gbc.gridheight = 2;
+
+        //RAM panel
+        RoundedPanel ramPanel = createRoundedPanel(gbc);
+        mainPanel.add(ramPanel, gbc);
+
+        //calculate the size to set both RAM bars
+        Dimension ramDim = new Dimension(ramPanel.getPreferredSize().width / 2 - (2 * ramPanel.getBorderUsage()),
+                                         ramPanel.getPreferredSize().height - (2 * ramPanel.getBorderUsage()));
+
+        //RAM sensors
+        SleekBar ramBar = new SleekBar(Sensor.RAM_USAGE, ramDim, "RAM", 50, Constants.Border.THICKNESS, 4);
+        SleekBar vramBar = new SleekBar(Sensor.VRAM_USAGE, ramDim, "VRAM", 50, Constants.Border.THICKNESS, 4);
+
+        GridBagConstraints ramGbc = new GridBagConstraints();
+        ramGbc.gridx = 0;
+
+        /**
+         * The below calculation takes the ramPanel's width, subtracts the borders, then subtracts the space the RAM SleekBars
+         * use. What remains is empty space on the panel. Of the remaining space, we want to make 3 even gaps - one to the left
+         * of the first bar, one between the bars, and one to the right of the second bar - so divide by 3.
+         *
+         * Since the components are within a GridBagLayout, they'll naturally be right next to each other without any offsets.
+         * We need to push the components away from each other evenly on the left and right sides, so half the gap size and
+         * then use that number to push to the left and right.
+         *
+         * This boils down to remainingSpace / 3 / 2 (or remainingSpace / 6) to set the insets.
+         */
+        int ramOffsets = (ramPanel.getPreferredSize().width - ramPanel.getBorderUsage() - (ramDim.width * 2)) / 6;
+        ramGbc.insets.set(0, ramOffsets, 0, ramOffsets);
+
+        ramPanel.add(ramBar, ramGbc);
+        ramGbc.gridx = 1;
+        ramPanel.add(vramBar, ramGbc);
 
         //CPU panel
+        gbc.gridx = 1;
+        gbc.weightx = 0.42;
+        gbc.weighty = 0.5;
+        gbc.gridheight = 1;
+
         RoundedPanel cpuPanel = createRoundedPanel(gbc);
         mainPanel.add(cpuPanel, gbc);
-        int gaugeWidth = cpuPanel.getPreferredSize().height - cpuPanel.getBorderUsage();
+        int gaugeWidth = Math.min(cpuPanel.getPreferredSize().height - (cpuPanel.getBorderUsage() * 2),
+                                  cpuPanel.getPreferredSize().width / 3 - (cpuPanel.getBorderUsage() * 2));
 
         //CPU sensors
         SleekGauge singleCoreCpuUsage = new SleekGauge(Sensor.MAX_SINGLE_CORE_CPU_USAGE, gaugeWidth);
@@ -119,7 +158,6 @@ public final class SensorPanel
         SleekGauge cpuTemperature = new SleekGauge(Sensor.CPU_TEMPERATURE, gaugeWidth);
 
         GridBagConstraints cpuGbc = new GridBagConstraints();
-        cpuGbc.fill = GridBagConstraints.NONE;
         cpuGbc.gridx = 0;
         cpuGbc.gridy = 0;
         cpuGbc.weightx = 1;
@@ -130,20 +168,8 @@ public final class SensorPanel
         cpuGbc.gridx++;
         cpuPanel.add(cpuTemperature, cpuGbc);
 
-        //RAM panel
-        gbc.gridy = 1;
-        gbc.gridwidth = 1;
-        gbc.weightx = 0.19;
-
-        RoundedPanel ramPanel = createRoundedPanel(gbc);
-        mainPanel.add(ramPanel, gbc);
-
-        //RAM sensors
-        //TODO
-
         //GPU panel
-        gbc.gridx = 1;
-        gbc.weightx = 0.38;
+        gbc.gridy = 1;
 
         RoundedPanel gpuPanel = createRoundedPanel(gbc);
         mainPanel.add(gpuPanel, gbc);
@@ -153,7 +179,6 @@ public final class SensorPanel
         SleekGauge gpuTemperature = new SleekGauge(Sensor.GPU_TEMPERATURE, gaugeWidth);
 
         GridBagConstraints gpuGbc = new GridBagConstraints();
-        gpuGbc.fill = GridBagConstraints.NONE;
         gpuGbc.gridx = 0;
         gpuGbc.gridy = 0;
         gpuGbc.weightx = 1;
@@ -173,15 +198,14 @@ public final class SensorPanel
         mainPanel.add(thermostatPanel, gbc);
 
         //calculate the size to set both thermostats
-        Dimension dimension = new Dimension(thermostatPanel.getPreferredSize().width/2 - thermostatPanel.getBorderUsage() * 2,
-                                            thermostatPanel.getPreferredSize().height - thermostatPanel.getBorderUsage());
+        Dimension thermDim = new Dimension(thermostatPanel.getPreferredSize().width/2 - thermostatPanel.getBorderUsage() * 2,
+                                           thermostatPanel.getPreferredSize().height - thermostatPanel.getBorderUsage());
 
         //Thermostat sensors
-        Thermostat airTherm = new Thermostat(Sensor.AIR_TEMPERATURE, "res/air.png", dimension);
-        Thermostat waterTherm = new Thermostat(Sensor.WATER_TEMPERATURE, "res/water.png", dimension);
+        Thermostat airTherm = new Thermostat(Sensor.AIR_TEMPERATURE, "res/air.png", thermDim);
+        Thermostat waterTherm = new Thermostat(Sensor.WATER_TEMPERATURE, "res/water.png", thermDim);
 
         GridBagConstraints thermGbc = new GridBagConstraints();
-        thermGbc.fill = GridBagConstraints.NONE;
         thermGbc.gridx = 0;
         thermGbc.gridy = 0;
 

@@ -9,7 +9,7 @@ import src.Sensor;
  *
  * This class ensures common functionality for all Figures.
  */
-public abstract sealed class Figure extends JPanel permits SleekGauge, Thermostat, IconField
+public abstract sealed class Figure extends JPanel permits SleekGauge, Thermostat, IconField, SleekBar
 {
     /**
      * Links this Figure with a Sensor.
