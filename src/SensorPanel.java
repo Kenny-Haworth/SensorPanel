@@ -113,8 +113,8 @@ public final class SensorPanel
         mainPanel.add(ramPanel, gbc);
 
         //calculate the size to set both RAM bars
-        Dimension ramDim = new Dimension(ramPanel.getPreferredSize().width / 2 - (2 * ramPanel.getBorderUsage()),
-                                         ramPanel.getPreferredSize().height - (2 * ramPanel.getBorderUsage()));
+        Dimension ramDim = new Dimension(ramPanel.getPreferredSize().width / 2 - (2 * ramPanel.getBorderReservedSpace()),
+                                         ramPanel.getPreferredSize().height - (2 * ramPanel.getBorderReservedSpace()));
 
         //RAM sensors
         SleekBar ramBar = new SleekBar(Sensor.RAM_USAGE, ramDim, "RAM", 50, Constants.Border.THICKNESS, 4);
@@ -134,7 +134,7 @@ public final class SensorPanel
          *
          * This boils down to remainingSpace / 3 / 2 (or remainingSpace / 6) to set the insets.
          */
-        int ramOffsets = (ramPanel.getPreferredSize().width - ramPanel.getBorderUsage() - (ramDim.width * 2)) / 6;
+        int ramOffsets = (ramPanel.getPreferredSize().width - ramPanel.getBorderReservedSpace() - (ramDim.width * 2)) / 6;
         ramGbc.insets.set(0, ramOffsets, 0, ramOffsets);
 
         ramPanel.add(ramBar, ramGbc);
@@ -149,8 +149,8 @@ public final class SensorPanel
 
         RoundedPanel cpuPanel = createRoundedPanel(gbc);
         mainPanel.add(cpuPanel, gbc);
-        int gaugeWidth = Math.min(cpuPanel.getPreferredSize().height - (cpuPanel.getBorderUsage() * 2),
-                                  cpuPanel.getPreferredSize().width / 3 - (cpuPanel.getBorderUsage() * 2));
+        int gaugeWidth = Math.min(cpuPanel.getPreferredSize().height - (cpuPanel.getBorderReservedSpace() * 2),
+                                  cpuPanel.getPreferredSize().width / 3 - (cpuPanel.getBorderReservedSpace() * 2));
 
         //CPU sensors
         SleekGauge singleCoreCpuUsage = new SleekGauge(Sensor.MAX_SINGLE_CORE_CPU_USAGE, gaugeWidth);
@@ -198,8 +198,8 @@ public final class SensorPanel
         mainPanel.add(thermostatPanel, gbc);
 
         //calculate the size to set both thermostats
-        Dimension thermDim = new Dimension(thermostatPanel.getPreferredSize().width/2 - thermostatPanel.getBorderUsage() * 2,
-                                           thermostatPanel.getPreferredSize().height - thermostatPanel.getBorderUsage());
+        Dimension thermDim = new Dimension(thermostatPanel.getPreferredSize().width/2 - thermostatPanel.getBorderReservedSpace() * 2,
+                                           thermostatPanel.getPreferredSize().height - thermostatPanel.getBorderReservedSpace() * 2);
 
         //Thermostat sensors
         Thermostat airTherm = new Thermostat(Sensor.AIR_TEMPERATURE, "res/air.png", thermDim);
@@ -421,7 +421,7 @@ public final class SensorPanel
      * Resets the sensor panel to its defaults. This includes the frame:
      *      • Size
      *      • Position
-     *      • Always being on top
+     *      • Not always being on top
      *      • Not displaying a border
      *      • Not being resizable
      *      • Locking its position
@@ -429,7 +429,7 @@ public final class SensorPanel
     private void resetFrame()
     {
         //reset default settings
-        this.frame.setAlwaysOnTop(true);
+        this.frame.setAlwaysOnTop(false);
         this.frame.setResizable(false);
         this.lockPosition = true;
 
@@ -561,9 +561,9 @@ public final class SensorPanel
                     }
                 }
             }
-            catch (Exception e)
+            catch (IOException e)
             {
-                logError("Exception encountered attempting to query FanControl values", e);
+                logError("IOException encountered attempting to query FanControl values", e);
             }
         },
         "FanControl Sensor Thread")

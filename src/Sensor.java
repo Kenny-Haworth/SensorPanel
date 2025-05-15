@@ -114,7 +114,10 @@ public enum Sensor
         }
 
         //repaint the figure
-        this.figure.repaint(); //thread safe
+        if (this.figure != null) //null figures means the value is unused and not displayed on the GUI
+        {
+            this.figure.repaint();
+        }
     }
 
     /**

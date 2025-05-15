@@ -24,7 +24,7 @@ public final class SleekGauge extends Figure
     /**
      * Creates a new SleekGauge.
      *
-     * @param sensor The sensor who's values should be displayed on this gauge
+     * @param sensor The sensor to display the data of
      * @param width The pixel width and height to set for the SleekGauge, which is square in size
      */
     public SleekGauge(Sensor sensor, int width)

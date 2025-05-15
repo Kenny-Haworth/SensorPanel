@@ -3,6 +3,7 @@ package src.util;
 import java.awt.BasicStroke;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.RenderingHints;
 
 import javax.swing.JPanel;
 
@@ -38,6 +39,7 @@ public final class RoundedPanel extends JPanel
     public void paintBorder(Graphics g)
     {
         Graphics2D g2d = (Graphics2D) g;
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
         g2d.setStroke(new BasicStroke(this.thickness));
         g2d.drawRoundRect(this.separation, this.separation,
                           this.getWidth() - this.separation * 2,
@@ -46,11 +48,12 @@ public final class RoundedPanel extends JPanel
     }
 
     /**
-     * Returns the amount of pixels used to draw the border in either the x or y direction.
+     * Returns the amount of pixels the border uses (in either the x or y direction),
+     * including some blank space to ensure components don't get too close to the border.
      *
      * @return The amount of pixels used to draw the border
      */
-    public int getBorderUsage()
+    public int getBorderReservedSpace()
     {
         return (this.thickness + this.separation) * 2;
     }
