@@ -18,9 +18,9 @@ import src.util.Utils;
  */
 public final class SleekGauge extends Figure
 {
-    private static final int MAX_ANGLE = 300;
-    private final Sensor sensor;
-    private final int gaugeWidth;
+    private static final int MAX_ANGLE = 300; //how many degrees to close the circle
+    private final Sensor sensor; //the sensor to display the data of
+    private final int thickness; //the thickness of this gauge
     private final Image icon; //an icon to display in the upper right
 
     /**
@@ -40,8 +40,8 @@ public final class SleekGauge extends Figure
         this.setBackground(Color.BLACK);
         this.setPreferredSize(new Dimension(width, height));
 
-        //make the gauge width 8% of the height of this panel
-        this.gaugeWidth = (int)(this.getPreferredSize().height * 0.08);
+        //make the thickness a percentage of the height of this panel
+        this.thickness = (int)(this.getPreferredSize().height * 0.08);
         int iconSize = (int)(this.getPreferredSize().height * 0.28);
         this.icon = Utils.loadImage(iconPath, iconSize, iconSize);
     }
@@ -68,9 +68,9 @@ public final class SleekGauge extends Figure
 
         //fill the interior of the gauge in black
         g2d.setColor(Color.BLACK);
-        g2d.fillArc(this.gaugeWidth, this.gaugeWidth,
-                    this.getHeight() - (this.gaugeWidth * 2),
-                    this.getHeight() - (this.gaugeWidth * 2),
+        g2d.fillArc(this.thickness, this.thickness,
+                    this.getHeight() - (this.thickness * 2),
+                    this.getHeight() - (this.thickness * 2),
                     0, 360);
 
         //fill in a white circle at the border of the used and unused portion of the gauge
@@ -81,12 +81,12 @@ public final class SleekGauge extends Figure
         double widthX = this.getHeight() * (1 + cosX)/2;
         double heightY = this.getHeight() * (1 - sinY)/2;
 
-        g2d.fillOval((int)(widthX - (this.gaugeWidth * widthX/this.getHeight())),
-                     (int)(heightY - (this.gaugeWidth * heightY/this.getHeight())),
-                     this.gaugeWidth, this.gaugeWidth);
+        g2d.fillOval((int)(widthX - (this.thickness * widthX/this.getHeight())),
+                     (int)(heightY - (this.thickness * heightY/this.getHeight())),
+                     this.thickness, this.thickness);
 
         //set the font size
-        Utils.setFontFromWidth(g2d, "100", this.getHeight() - this.gaugeWidth * 4);
+        Utils.setFontFromWidth(g2d, "100", this.getHeight() - this.thickness * 4);
 
         //display the sensor's value in the center
         FontMetrics metrics = g2d.getFontMetrics();

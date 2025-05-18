@@ -21,7 +21,7 @@ public final class Thermostat extends Figure
     private static final double BULB_SIZE = 0.73; //percentage from 0 to 1
     private static final int BULB_MAX_ANGLE = 300; //180 to 360 range
     private final Sensor sensor; //the sensor to display the data of
-    private final int thermWidth; //the wall width of this thermostat
+    private final int thickness; //the wall width of this thermostat
     private final Image icon; //an icon to display in the upper right
 
     /**
@@ -38,8 +38,8 @@ public final class Thermostat extends Figure
         this.setBackground(Color.BLACK);
         this.setPreferredSize(size);
 
-        //make the thermometer's width a percentage of the width of this panel
-        this.thermWidth = (int)(this.getPreferredSize().width * 0.035);
+        //make the thermometer's thickness a percentage of the width of this panel
+        this.thickness = (int)(this.getPreferredSize().width * 0.035);
         int iconSize = (int)(this.getPreferredSize().width * 0.3);
         this.icon = Utils.loadImage(iconPath, iconSize, iconSize);
     }
@@ -64,12 +64,12 @@ public final class Thermostat extends Figure
                     -(BULB_MAX_ANGLE/2 + 90), BULB_MAX_ANGLE);
 
         //draw vertical lines as sides of the thermostat
-        g2d.setStroke(new BasicStroke(this.thermWidth));
+        g2d.setStroke(new BasicStroke(this.thickness));
         double radAngle = Math.toRadians((BULB_MAX_ANGLE - 180)/2); //angle from the horizontal up to the arc's end
         double cosX = Math.cos(radAngle);
 
-        int xLeftLine = (int)(this.getWidth()/2D - (cosX * radius) + this.thermWidth/2D);
-        int xRightLine = (int)(this.getWidth()/2D + (cosX * radius) - this.thermWidth/2D);
+        int xLeftLine = (int)(this.getWidth()/2D - (cosX * radius) + this.thickness/2D);
+        int xRightLine = (int)(this.getWidth()/2D + (cosX * radius) - this.thickness/2D);
         int yLowerHeight = (int)(this.getHeight() - radius);
 
         int arc2diameter = (int)Math.round(diameter * cosX); //the diameter and radius of the top of the thermostat
@@ -82,10 +82,10 @@ public final class Thermostat extends Figure
 
         //overwrite the interior of the bulb with empty space
         g2d.setColor(Color.BLACK);
-        g2d.fillArc((int)(this.getWidth()/2D - radius + this.thermWidth),
-                    this.getHeight() - diameter + this.thermWidth,
-                    diameter - this.thermWidth * 2,
-                    diameter - this.thermWidth * 2,
+        g2d.fillArc((int)(this.getWidth()/2D - radius + this.thickness),
+                    this.getHeight() - diameter + this.thickness,
+                    diameter - this.thickness * 2,
+                    diameter - this.thickness * 2,
                     0, 360);
 
         //fill the top of the thermostat, a single connecting arc
@@ -98,37 +98,37 @@ public final class Thermostat extends Figure
 
         //overwrite the interior of the top of the thermostat with empty space
         g2d.setColor(Color.BLACK);
-        g2d.fillArc((int)(this.getWidth()/2D - arc2radius + this.thermWidth),
-                    this.thermWidth + 1, //+1 offset due to aliasing not fully overwriting the bottom of the top of the thermostat
-                    arc2diameter - this.thermWidth * 2,
-                    arc2diameter - this.thermWidth * 2,
+        g2d.fillArc((int)(this.getWidth()/2D - arc2radius + this.thickness),
+                    this.thickness + 1, //+1 offset due to aliasing not fully overwriting the bottom of the top of the thermostat
+                    arc2diameter - this.thickness * 2,
+                    arc2diameter - this.thickness * 2,
                     0, 180);
 
         //determine what percentage the interior of the bulb constitutes the entire fillable height
         double fillPerc = ((this.sensor.getData() - this.sensor.min()) / (this.sensor.max() - this.sensor.min()));
-        int fillableHeight = this.getHeight() - this.thermWidth * 2;
+        int fillableHeight = this.getHeight() - this.thickness * 2;
 
-        g2d.setClip(0, this.thermWidth + (int)((1 - fillPerc) * fillableHeight), this.getWidth(), this.getHeight());
+        g2d.setClip(0, this.thickness + (int)((1 - fillPerc) * fillableHeight), this.getWidth(), this.getHeight());
 
         //fill the interior of the bulb
         g2d.setColor(Color.RED);
-        g2d.fillArc((int)(this.getWidth()/2D - radius + this.thermWidth),
-                    this.getHeight() - diameter + this.thermWidth,
-                    diameter - this.thermWidth * 2,
-                    diameter - this.thermWidth * 2,
+        g2d.fillArc((int)(this.getWidth()/2D - radius + this.thickness),
+                    this.getHeight() - diameter + this.thickness,
+                    diameter - this.thickness * 2,
+                    diameter - this.thickness * 2,
                     0, 360);
 
         //fill the vertical section
-        g2d.fillRect(xLeftLine + this.thermWidth/2,
+        g2d.fillRect(xLeftLine + this.thickness/2,
                      (int)arc2radius,
-                     arc2diameter - this.thermWidth * 2,
+                     arc2diameter - this.thickness * 2,
                      this.getHeight() - diameter);
 
         //fill the top of the thermostat
-        g2d.fillArc((int)(this.getWidth()/2D - arc2radius + this.thermWidth),
-                    this.thermWidth,
-                    arc2diameter - this.thermWidth * 2,
-                    arc2diameter - this.thermWidth * 2,
+        g2d.fillArc((int)(this.getWidth()/2D - arc2radius + this.thickness),
+                    this.thickness,
+                    arc2diameter - this.thickness * 2,
+                    arc2diameter - this.thickness * 2,
                     0, 180);
 
         g2d.setClip(null);
@@ -136,7 +136,7 @@ public final class Thermostat extends Figure
 
         //set the font size
         String value = this.sensor.getRoundedData() + this.sensor.unit();
-        Utils.setFontFromWidth(g2d, value + "0", diameter - this.thermWidth);
+        Utils.setFontFromWidth(g2d, value + "0", diameter - this.thickness);
 
         //display the sensor's value in the center
         FontMetrics metrics = g2d.getFontMetrics();
