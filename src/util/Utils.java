@@ -4,9 +4,13 @@ import static src.util.Logger.log;
 import static src.util.Logger.logError;
 import static src.util.Logger.logWarning;
 
+import java.awt.Component;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.GraphicsDevice;
 import java.awt.Image;
+import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.io.BufferedReader;
 import java.io.File;
@@ -127,6 +131,20 @@ public final class Utils
             System.exit(1);
             return null;
         }
+    }
+
+    /**
+     * Centers the given component on the given monitor.
+     *
+     * @param component The component to center
+     * @param device The monitor to center the component on
+     */
+    public static void centerComponent(Component component, GraphicsDevice device)
+    {
+        Rectangle bounds = device.getDefaultConfiguration().getBounds();
+        Dimension size = component.getSize();
+        component.setLocation(bounds.x + (bounds.width - size.width) / 2,
+                              bounds.y + (bounds.height - size.height) / 2);
     }
 
     /**

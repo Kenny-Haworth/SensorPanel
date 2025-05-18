@@ -19,6 +19,7 @@ public final class Constants
     public static final Color THEME_COLOR = new Color(41, 171, 250); //a light cyan
     public static final double CENTS_PER_KWH = 65;
     public static final Pattern SPLIT_SPACES = Pattern.compile("\\p{Space}+");
+    public static final boolean ENABLE_DEBUG = false; //to enable debugging logic
 
     /**
      * Groups similar constants for borders.

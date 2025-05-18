@@ -83,6 +83,7 @@ public final class SensorPanel
         //setup the main frame
         this.frame = new JFrame("Sensor Panel");
         setupMainFrame();
+        if (Constants.ENABLE_DEBUG) moveSensorPanelToSecondaryMonitor();
 
         //create the main panel and display the frame
         this.frame.add(createMainPanel());
@@ -465,7 +466,6 @@ public final class SensorPanel
             if (device.getDisplayMode().getWidth() == Constants.FRAME_WIDTH &&
                 device.getDisplayMode().getHeight() == Constants.FRAME_HEIGHT)
             {
-                //position the frame onto the sensor panel and use the bounds to size it to account for Windows scaling
                 this.frame.setSize(device.getDefaultConfiguration().getBounds().getSize());
                 this.frame.setLocation(device.getDefaultConfiguration().getBounds().getLocation());
                 break;
@@ -640,5 +640,40 @@ public final class SensorPanel
             }
         }),
         0, Constants.UPDATE_RATE_SECONDS * 1000);
+    }
+
+    /**
+     * Moves the location of the SensorPanel from the dedicated sensor panel monitor to the center of the second standard monitor.
+     * If only one standard monitor is connected, moves the SensorPanel to that monitor.
+     */
+    private void moveSensorPanelToSecondaryMonitor()
+    {
+        //reset default settings
+        this.lockPosition = false;
+
+        int numScreenDevices = GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices().length;
+        boolean firstTime = true;
+
+        //loop over the connected monitors
+        for (GraphicsDevice device : GraphicsEnvironment.getLocalGraphicsEnvironment().getScreenDevices())
+        {
+            //look at standard-sized displays (to avoid placing the SensorPanel on the dedicated Sensor Panel monitor)
+            if ((device.getDisplayMode().getWidth() == 3840 && device.getDisplayMode().getHeight() == 2160) || //UHD
+                (device.getDisplayMode().getWidth() == 2560 && device.getDisplayMode().getHeight() == 1440) || //QHD
+                (device.getDisplayMode().getWidth() == 1920 && device.getDisplayMode().getHeight() == 1080)) //FHD
+            {
+                //look for the second connected monitor, but use the first monitor if only one monitor is connected
+                if (firstTime && numScreenDevices != 1)
+                {
+                    firstTime = false;
+                    continue;
+                }
+
+                //position the SensorPanel on the center of the monitor
+                this.frame.setSize(Constants.FRAME_WIDTH, Constants.FRAME_HEIGHT);
+                Utils.centerComponent(this.frame, device);
+                break;
+            }
+        }
     }
 }
