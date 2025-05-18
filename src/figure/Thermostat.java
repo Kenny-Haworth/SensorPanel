@@ -18,7 +18,7 @@ import src.util.Utils;
  */
 public final class Thermostat extends Figure
 {
-    private static final double BULB_SIZE = 0.7; //percentage from 0 to 1
+    private static final double BULB_SIZE = 0.73; //percentage from 0 to 1
     private static final int BULB_MAX_ANGLE = 300; //180 to 360 range
     private final Sensor sensor; //the sensor to display the data of
     private final int thermWidth; //the wall width of this thermostat

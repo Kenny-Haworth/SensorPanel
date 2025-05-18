@@ -143,54 +143,72 @@ public final class SensorPanel
 
         //CPU panel
         gbc.gridx = 1;
-        gbc.weightx = 0.42;
+        gbc.weightx = 0.46;
         gbc.weighty = 0.5;
         gbc.gridheight = 1;
 
         RoundedPanel cpuPanel = createRoundedPanel(gbc);
         mainPanel.add(cpuPanel, gbc);
-        int gaugeWidth = Math.min(cpuPanel.getPreferredSize().height - (cpuPanel.getBorderReservedSpace() * 2),
-                                  cpuPanel.getPreferredSize().width / 3 - (cpuPanel.getBorderReservedSpace() * 2));
+        int gaugeHeight = cpuPanel.getPreferredSize().height - (cpuPanel.getBorderReservedSpace() * 2);
+        int iconWidth = 20;
+        int gaugeWidth = gaugeHeight + iconWidth; //adds space for icons
 
         //CPU sensors
-        SleekGauge singleCoreCpuUsage = new SleekGauge(Sensor.MAX_SINGLE_CORE_CPU_USAGE, gaugeWidth);
-        SleekGauge combinedCpuUsage = new SleekGauge(Sensor.COMBINED_CPU_USAGE, gaugeWidth);
-        SleekGauge cpuTemperature = new SleekGauge(Sensor.CPU_TEMPERATURE, gaugeWidth);
+        SleekGauge singleCoreCpuUsage = new SleekGauge(Sensor.MAX_SINGLE_CORE_CPU_USAGE, "res/single_core_cpu.png", gaugeWidth, gaugeHeight);
+        SleekGauge combinedCpuUsage = new SleekGauge(Sensor.COMBINED_CPU_USAGE, "res/multi_core_cpu.png", gaugeWidth, gaugeHeight);
+        SleekGauge cpuTemperature = new SleekGauge(Sensor.CPU_TEMPERATURE, "res/thermostat.png", gaugeWidth, gaugeHeight);
 
-        GridBagConstraints cpuGbc = new GridBagConstraints();
-        cpuGbc.gridx = 0;
-        cpuGbc.gridy = 0;
-        cpuGbc.weightx = 1;
+        /**
+         * Manually manage the layout and positions of all gauges on the CPU and GPU panels.
+         *
+         * This is because a GridBagLayout does not know the iconWidth should not contribute to the centering
+         * of the SleekGauges, meaning it will not place the gauges equidistant from each each other.
+         */
+        cpuPanel.setLayout(null);
+        int usableSpace = cpuPanel.getPreferredSize().width - cpuPanel.getBorderReservedSpace();
+        int gap = (usableSpace - 3 * gaugeHeight) / 4; //the blank space on either side of each gauge
 
-        cpuPanel.add(singleCoreCpuUsage, cpuGbc);
-        cpuGbc.gridx++;
-        cpuPanel.add(combinedCpuUsage, cpuGbc);
-        cpuGbc.gridx++;
-        cpuPanel.add(cpuTemperature, cpuGbc);
+        int[] xGaugePositions =
+        {
+            cpuPanel.getBorderReservedSpace()/2 + gap,
+            cpuPanel.getPreferredSize().width/2 - gaugeHeight/2,
+            cpuPanel.getPreferredSize().width - cpuPanel.getBorderReservedSpace()/2 - gap - gaugeHeight
+        };
+
+        singleCoreCpuUsage.setBounds(xGaugePositions[0], cpuPanel.getBorderReservedSpace(), gaugeWidth, gaugeHeight);
+        cpuPanel.add(singleCoreCpuUsage);
+        combinedCpuUsage.setBounds(xGaugePositions[1], cpuPanel.getBorderReservedSpace(), gaugeWidth, gaugeHeight);
+        cpuPanel.add(combinedCpuUsage);
+        cpuTemperature.setBounds(xGaugePositions[2], cpuPanel.getBorderReservedSpace(), gaugeWidth, gaugeHeight);
+        cpuPanel.add(cpuTemperature);
 
         //GPU panel
         gbc.gridy = 1;
 
         RoundedPanel gpuPanel = createRoundedPanel(gbc);
+        gpuPanel.setLayout(null);
         mainPanel.add(gpuPanel, gbc);
 
         //GPU sensors
-        SleekGauge gpuUsage = new SleekGauge(Sensor.GPU_USAGE, gaugeWidth);
-        SleekGauge gpuTemperature = new SleekGauge(Sensor.GPU_TEMPERATURE, gaugeWidth);
+        SleekGauge gpuPowerUsage = new SleekGauge(Sensor.GPU_POWER_USAGE, "res/lightning_bolt.png", gaugeWidth, gaugeHeight);
+        SleekGauge gpuUsage = new SleekGauge(Sensor.GPU_USAGE, "res/gpu.png", gaugeWidth, gaugeHeight);
+        SleekGauge gpuTemperature = new SleekGauge(Sensor.GPU_TEMPERATURE, "res/thermostat.png", gaugeWidth, gaugeHeight);
 
         GridBagConstraints gpuGbc = new GridBagConstraints();
         gpuGbc.gridx = 0;
-        gpuGbc.gridy = 0;
-        gpuGbc.weightx = 1;
+        gpuGbc.insets.set(0, 20, 0, 20);
 
-        gpuPanel.add(gpuUsage, gpuGbc);
-        gpuGbc.gridx++;
-        gpuPanel.add(gpuTemperature, gpuGbc);
+        gpuPowerUsage.setBounds(xGaugePositions[0], gpuPanel.getBorderReservedSpace(), gaugeWidth, gaugeHeight);
+        gpuPanel.add(gpuPowerUsage);
+        gpuUsage.setBounds(xGaugePositions[1], gpuPanel.getBorderReservedSpace(), gaugeWidth, gaugeHeight);
+        gpuPanel.add(gpuUsage);
+        gpuTemperature.setBounds(xGaugePositions[2], gpuPanel.getBorderReservedSpace(), gaugeWidth, gaugeHeight);
+        gpuPanel.add(gpuTemperature);
 
         //Thermostat panel
         gbc.gridx = 2;
         gbc.gridy = 0;
-        gbc.weightx = 0.28;
+        gbc.weightx = 0.24;
         gbc.weighty = 1;
         gbc.gridheight = 2;
 
@@ -198,7 +216,7 @@ public final class SensorPanel
         mainPanel.add(thermostatPanel, gbc);
 
         //calculate the size to set both thermostats
-        Dimension thermDim = new Dimension(thermostatPanel.getPreferredSize().width/2 - thermostatPanel.getBorderReservedSpace() * 2,
+        Dimension thermDim = new Dimension(thermostatPanel.getPreferredSize().width/2 - thermostatPanel.getBorderReservedSpace(),
                                            thermostatPanel.getPreferredSize().height - thermostatPanel.getBorderReservedSpace() * 2);
 
         //Thermostat sensors
@@ -221,7 +239,7 @@ public final class SensorPanel
         mainPanel.add(fieldPanel, gbc);
 
         //Field sensors
-        IconField systemPowerUsage = new IconField(Sensor.SYSTEM_POWER_USAGE, "res/lightning_bolt.jpg");
+        IconField systemPowerUsage = new IconField(Sensor.SYSTEM_POWER_USAGE, "res/electric_plug.png");
         IconField secondaryPowerUsage = new IconField(Sensor.SECONDARY_POWER_USAGE, "res/motherboard.png");
         IconField costPerHour = new IconField(Sensor.SYSTEM_COST_PER_HOUR, "res/money.png");
         IconField fps = new IconField(Sensor.FPS, "res/fps.png");

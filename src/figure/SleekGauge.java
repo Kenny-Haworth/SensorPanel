@@ -6,6 +6,7 @@ import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.RenderingHints;
 
 import src.Constants;
@@ -20,22 +21,29 @@ public final class SleekGauge extends Figure
     private static final int MAX_ANGLE = 300;
     private final Sensor sensor;
     private final int gaugeWidth;
+    private final Image icon; //an icon to display in the upper right
 
     /**
      * Creates a new SleekGauge.
      *
      * @param sensor The sensor to display the data of
-     * @param width The pixel width and height to set for the SleekGauge, which is square in size
+     * @param iconPath The path to an icon to load and display
+     * @param height The pixel height to use for this Figure.
+     *               This value should not be larger than the width as the gauge should look square in size.
+     * @param width The pixel width to use for this Figure. width - height = the amount of pixel space to
+     *              the right to place the icon, allowing the icon to be visually separated from the gauge.
      */
-    public SleekGauge(Sensor sensor, int width)
+    public SleekGauge(Sensor sensor, String iconPath, int width, int height)
     {
         super(sensor);
         this.sensor = sensor;
         this.setBackground(Color.BLACK);
-        this.setPreferredSize(new Dimension(width, width));
+        this.setPreferredSize(new Dimension(width, height));
 
-        //make the gauge width 8% of the width of this panel
-        this.gaugeWidth = (int)(this.getPreferredSize().width * 0.08);
+        //make the gauge width 8% of the height of this panel
+        this.gaugeWidth = (int)(this.getPreferredSize().height * 0.08);
+        int iconSize = (int)(this.getPreferredSize().height * 0.28);
+        this.icon = Utils.loadImage(iconPath, iconSize, iconSize);
     }
 
     @Override
@@ -52,16 +60,16 @@ public final class SleekGauge extends Figure
 
         //draw the unused portion of the gauge first
         g2d.setColor(Color.DARK_GRAY);
-        g2d.fillArc(0, 0, this.getWidth(), this.getHeight(), startingAngle - angle, -MAX_ANGLE + angle);
+        g2d.fillArc(0, 0, this.getHeight(), this.getHeight(), startingAngle - angle, -MAX_ANGLE + angle);
 
         //draw the used portion of the gauge
         g2d.setColor(Constants.THEME_COLOR);
-        g2d.fillArc(0, 0, this.getWidth(), this.getHeight(), startingAngle, -angle);
+        g2d.fillArc(0, 0, this.getHeight(), this.getHeight(), startingAngle, -angle);
 
         //fill the interior of the gauge in black
         g2d.setColor(Color.BLACK);
         g2d.fillArc(this.gaugeWidth, this.gaugeWidth,
-                    this.getWidth() - (this.gaugeWidth * 2),
+                    this.getHeight() - (this.gaugeWidth * 2),
                     this.getHeight() - (this.gaugeWidth * 2),
                     0, 360);
 
@@ -70,21 +78,21 @@ public final class SleekGauge extends Figure
 
         double cosX = Math.cos(Math.toRadians(startingAngle - angle));
         double sinY = Math.sin(Math.toRadians(startingAngle - angle));
-        double widthX = this.getWidth() * (1 + cosX)/2;
+        double widthX = this.getHeight() * (1 + cosX)/2;
         double heightY = this.getHeight() * (1 - sinY)/2;
 
-        g2d.fillOval((int)(widthX - (this.gaugeWidth * widthX/this.getWidth())),
+        g2d.fillOval((int)(widthX - (this.gaugeWidth * widthX/this.getHeight())),
                      (int)(heightY - (this.gaugeWidth * heightY/this.getHeight())),
                      this.gaugeWidth, this.gaugeWidth);
 
         //set the font size
-        Utils.setFontFromWidth(g2d, "100", this.getWidth() - this.gaugeWidth * 4);
+        Utils.setFontFromWidth(g2d, "100", this.getHeight() - this.gaugeWidth * 4);
 
         //display the sensor's value in the center
         FontMetrics metrics = g2d.getFontMetrics();
         String data = this.sensor.getRoundedData();
         g2d.drawString(data,
-                       this.getWidth()/2 - metrics.stringWidth(data)/2,
+                       this.getHeight()/2 - metrics.stringWidth(data)/2,
                        this.getHeight()/2 + metrics.getAscent()/3);
 
         //display the units at the bottom
@@ -92,7 +100,11 @@ public final class SleekGauge extends Figure
         metrics = g2d.getFontMetrics();
         String unit = this.sensor.unit().toString();
         g2d.drawString(unit,
-                       this.getWidth()/2 - metrics.stringWidth(unit)/2,
+                       this.getHeight()/2 - metrics.stringWidth(unit)/2,
                        this.getHeight() - metrics.getAscent()/4);
+
+        //display the icon in the upper right
+        g2d.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+        g2d.drawImage(this.icon, this.getWidth() - this.icon.getWidth(null), 0, null);
     }
 }
