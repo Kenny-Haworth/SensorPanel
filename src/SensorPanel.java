@@ -480,6 +480,7 @@ public final class SensorPanel
      */
     private static void monitorHwInfoSensors()
     {
+        long startTime = System.nanoTime();
         new Timer("HwInfo Sensor Thread").scheduleAtFixedRate(Utils.timer(() ->
         {
             try
@@ -533,7 +534,7 @@ public final class SensorPanel
                 }
 
                 int exitCode = process.waitFor();
-                if (exitCode != 0)
+                if (exitCode != 0 && (System.nanoTime() - startTime)/1e9 > 10) //wait 10 seconds (max HwInfo startup time) to report errors
                 {
                     logError("Reading HwInfo registry values exiting with nonzero value: " + exitCode +
                              ". Output of command: " + builder);
@@ -544,7 +545,7 @@ public final class SensorPanel
                 logError("Unable to query HwInfo values", e);
             }
         }),
-        10_000, //give HwInfo ample time to startup
+        0,
         Constants.UPDATE_RATE_SECONDS * 1000);
     }
 
