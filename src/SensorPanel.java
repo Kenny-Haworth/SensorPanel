@@ -113,8 +113,8 @@ public final class SensorPanel
         mainPanel.add(ramPanel, gbc);
 
         //calculate the size to set both RAM bars
-        Dimension ramDim = new Dimension(ramPanel.getPreferredSize().width / 2 - (2 * ramPanel.getBorderReservedSpace()),
-                                         ramPanel.getPreferredSize().height - (2 * ramPanel.getBorderReservedSpace()));
+        Dimension ramDim = new Dimension(ramPanel.getPreferredSize().width / 2 - ramPanel.getBorderBufferSpace(),
+                                         ramPanel.getPreferredSize().height - ramPanel.getBorderBufferSpace());
 
         //RAM sensors
         SleekBar ramBar = new SleekBar(Sensor.RAM_USAGE, ramDim, "RAM", 50, Constants.Border.THICKNESS, 4);
@@ -134,7 +134,7 @@ public final class SensorPanel
          *
          * This boils down to remainingSpace / 3 / 2 (or remainingSpace / 6) to set the insets.
          */
-        int ramOffsets = (ramPanel.getPreferredSize().width - ramPanel.getBorderReservedSpace() - (ramDim.width * 2)) / 6;
+        int ramOffsets = (ramPanel.getPreferredSize().width - ramPanel.getTotalBorderSpace() - (ramDim.width * 2)) / 6;
         ramGbc.insets.set(0, ramOffsets, 0, ramOffsets);
 
         ramPanel.add(ramBar, ramGbc);
@@ -149,7 +149,7 @@ public final class SensorPanel
 
         RoundedPanel cpuPanel = createRoundedPanel(gbc);
         mainPanel.add(cpuPanel, gbc);
-        int gaugeHeight = cpuPanel.getPreferredSize().height - (cpuPanel.getBorderReservedSpace() * 2);
+        int gaugeHeight = cpuPanel.getPreferredSize().height - cpuPanel.getBorderBufferSpace();
         int iconWidth = 20;
         int gaugeWidth = gaugeHeight + iconWidth; //adds space for icons
 
@@ -165,21 +165,21 @@ public final class SensorPanel
          * of the SleekGauges, meaning it will not place the gauges equidistant from each each other.
          */
         cpuPanel.setLayout(null);
-        int usableSpace = cpuPanel.getPreferredSize().width - cpuPanel.getBorderReservedSpace();
+        int usableSpace = cpuPanel.getPreferredSize().width - cpuPanel.getTotalBorderSpace();
         int gap = (usableSpace - 3 * gaugeHeight) / 4; //the blank space on either side of each gauge
 
         int[] xGaugePositions =
         {
-            cpuPanel.getBorderReservedSpace()/2 + gap,
+            cpuPanel.getBorderSpace() + gap,
             cpuPanel.getPreferredSize().width/2 - gaugeHeight/2,
-            cpuPanel.getPreferredSize().width - cpuPanel.getBorderReservedSpace()/2 - gap - gaugeHeight
+            cpuPanel.getPreferredSize().width - cpuPanel.getBorderSpace() - gap - gaugeHeight
         };
 
-        singleCoreCpuUsage.setBounds(xGaugePositions[0], cpuPanel.getBorderReservedSpace(), gaugeWidth, gaugeHeight);
+        singleCoreCpuUsage.setBounds(xGaugePositions[0], cpuPanel.getTotalBorderSpace(), gaugeWidth, gaugeHeight);
         cpuPanel.add(singleCoreCpuUsage);
-        combinedCpuUsage.setBounds(xGaugePositions[1], cpuPanel.getBorderReservedSpace(), gaugeWidth, gaugeHeight);
+        combinedCpuUsage.setBounds(xGaugePositions[1], cpuPanel.getTotalBorderSpace(), gaugeWidth, gaugeHeight);
         cpuPanel.add(combinedCpuUsage);
-        cpuTemperature.setBounds(xGaugePositions[2], cpuPanel.getBorderReservedSpace(), gaugeWidth, gaugeHeight);
+        cpuTemperature.setBounds(xGaugePositions[2], cpuPanel.getTotalBorderSpace(), gaugeWidth, gaugeHeight);
         cpuPanel.add(cpuTemperature);
 
         //GPU panel
@@ -198,11 +198,11 @@ public final class SensorPanel
         gpuGbc.gridx = 0;
         gpuGbc.insets.set(0, 20, 0, 20);
 
-        gpuPowerUsage.setBounds(xGaugePositions[0], gpuPanel.getBorderReservedSpace(), gaugeWidth, gaugeHeight);
+        gpuPowerUsage.setBounds(xGaugePositions[0], gpuPanel.getTotalBorderSpace(), gaugeWidth, gaugeHeight);
         gpuPanel.add(gpuPowerUsage);
-        gpuUsage.setBounds(xGaugePositions[1], gpuPanel.getBorderReservedSpace(), gaugeWidth, gaugeHeight);
+        gpuUsage.setBounds(xGaugePositions[1], gpuPanel.getTotalBorderSpace(), gaugeWidth, gaugeHeight);
         gpuPanel.add(gpuUsage);
-        gpuTemperature.setBounds(xGaugePositions[2], gpuPanel.getBorderReservedSpace(), gaugeWidth, gaugeHeight);
+        gpuTemperature.setBounds(xGaugePositions[2], gpuPanel.getTotalBorderSpace(), gaugeWidth, gaugeHeight);
         gpuPanel.add(gpuTemperature);
 
         //Thermostat panel
@@ -216,8 +216,8 @@ public final class SensorPanel
         mainPanel.add(thermostatPanel, gbc);
 
         //calculate the size to set both thermostats
-        Dimension thermDim = new Dimension(thermostatPanel.getPreferredSize().width/2 - thermostatPanel.getBorderReservedSpace(),
-                                           thermostatPanel.getPreferredSize().height - thermostatPanel.getBorderReservedSpace() * 2);
+        Dimension thermDim = new Dimension(thermostatPanel.getPreferredSize().width/2 - thermostatPanel.getTotalBorderSpace(),
+                                           thermostatPanel.getPreferredSize().height - thermostatPanel.getBorderBufferSpace());
 
         //Thermostat sensors
         Thermostat airTherm = new Thermostat(Sensor.AIR_TEMPERATURE, "res/air.png", thermDim);

@@ -48,13 +48,34 @@ public final class RoundedPanel extends JPanel
     }
 
     /**
-     * Returns the amount of pixels the border uses (in either the x or y direction),
-     * including some blank space to ensure components don't get too close to the border.
+     * Returns the number of pixels a single border side uses (in either the x or y direction).
      *
-     * @return The amount of pixels used to draw the border
+     * @return The number of pixels a single border side uses
      */
-    public int getBorderReservedSpace()
+    public int getBorderSpace()
     {
-        return (this.thickness + this.separation) * 2;
+        return this.thickness + this.separation;
+    }
+
+    /**
+     * Returns the number of pixels the border uses in a single plane (x or y plane),
+     * which is twice the space a single border side uses.
+     *
+     * @return The number of pixels the border uses in a single plane
+     */
+    public int getTotalBorderSpace()
+    {
+        return getBorderSpace() * 2;
+    }
+
+    /**
+     * Returns the number of pixels the border uses in a single plane in addition to a
+     * constant buffer space to ensure components do not get too close to the border.
+     *
+     * @return The buffer space for this border
+     */
+    public int getBorderBufferSpace()
+    {
+        return getTotalBorderSpace() * 2;
     }
 }
