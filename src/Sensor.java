@@ -39,8 +39,8 @@ public enum Sensor
     INTERNET_UPLOAD_USAGE     (Unit.MEGABITS_PER_SECOND,   0,     35,     0,     25),
     AIR_TEMPERATURE           (Unit.DEGREES_FAHRENHEIT,   60,    110,    60,     91), //inside the case
     WATER_TEMPERATURE         (Unit.DEGREES_FAHRENHEIT,   60,    110,    60,    105), //i.e. coolant temperature
-    SYSTEM_POWER_USAGE        (Unit.WATTS,                 0,   1500,   100,    720), //total system power usage measured at the outlet
-    SECONDARY_POWER_USAGE     (Unit.WATTS,              -500,   1500,  -500,    720), //system power usage excluding the CPU and GPU
+    SYSTEM_POWER_USAGE        (Unit.WATTS,                 0,   1550,   100,    720), //total system power usage measured at the outlet
+    SECONDARY_POWER_USAGE     (Unit.WATTS,                 0,   1550,     0,    800), //system power usage excluding the CPU and GPU
     SYSTEM_COST_PER_HOUR      (Unit.CENTS,                 0,    100,     5,   45.5); //calculated from total system power usage, maximum set from a 720W maximum draw at 65¢ per kwh
 
     //member variables

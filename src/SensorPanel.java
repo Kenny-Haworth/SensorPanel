@@ -517,9 +517,20 @@ public final class SensorPanel
                 }
 
                 //calculate combined power usage of everything but the CPU and GPU
-                Sensor.SECONDARY_POWER_USAGE.set(Sensor.SYSTEM_POWER_USAGE.getData() -
-                                                 Sensor.CPU_POWER_USAGE.getData() -
-                                                 Sensor.GPU_POWER_USAGE.getData());
+                double secondaryPowerUsage = Sensor.SYSTEM_POWER_USAGE.getData() -
+                                             Sensor.CPU_POWER_USAGE.getData() -
+                                             Sensor.GPU_POWER_USAGE.getData();
+
+                /**
+                 * System power usage is obtained from the TP-Link smart plug while CPU and GPU power usage is obtained from
+                 * HwInfo. Because these values are not always in sync, when power usage drastically changes (e.g. from closing or
+                 * opening a power-intensive application) one may lag the other and cause the secondary power usage to become
+                 * negative. In this case, use the last-known positive value of the secondary power usage.
+                 */
+                if (secondaryPowerUsage > 0)
+                {
+                    Sensor.SECONDARY_POWER_USAGE.set(secondaryPowerUsage);
+                }
 
                 int exitCode = process.waitFor();
                 if (exitCode != 0)
@@ -589,9 +600,9 @@ public final class SensorPanel
     }
 
     /**
-     * Periodically updates the sensors from TpLink.
+     * Periodically updates the sensors from TP-Link.
      *
-     * This includes a single HS110 smart plug that provides real-time energy usage information for the PC.
+     * This includes a single HS110 smart plug that provides real-time energy usage information for the PC measured at the wall.
      */
     private static void monitorTpLinkSensors()
     {
