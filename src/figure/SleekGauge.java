@@ -9,7 +9,6 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 
-import src.Constants;
 import src.Sensor;
 import src.util.Utils;
 
@@ -20,6 +19,7 @@ public final class SleekGauge extends Figure
 {
     private static final int MAX_ANGLE = 300; //how many degrees to close the circle
     private final Sensor sensor; //the sensor to display the data of
+    private final Color color; //the color for this gauge
     private final int thickness; //the thickness of this gauge
     private final Image icon; //an icon to display in the upper right
 
@@ -27,16 +27,17 @@ public final class SleekGauge extends Figure
      * Creates a new SleekGauge.
      *
      * @param sensor The sensor to display the data of
+     * @param color The color to set this gauge to
      * @param iconPath The path to an icon to load and display
      * @param height The pixel height to use for this Figure.
      *               This value should not be larger than the width as the gauge should look square in size.
      * @param width The pixel width to use for this Figure. width - height = the amount of pixel space to
      *              the right to place the icon, allowing the icon to be visually separated from the gauge.
      */
-    public SleekGauge(Sensor sensor, String iconPath, int width, int height)
+    public SleekGauge(Sensor sensor, Color color, String iconPath, int width, int height)
     {
-        super(sensor);
-        this.sensor = sensor;
+        super(this.sensor = sensor);
+        this.color = color;
         this.setBackground(Color.BLACK);
         this.setPreferredSize(new Dimension(width, height));
 
@@ -63,7 +64,7 @@ public final class SleekGauge extends Figure
         g2d.fillArc(0, 0, this.getHeight(), this.getHeight(), startingAngle - angle, -MAX_ANGLE + angle);
 
         //draw the used portion of the gauge
-        g2d.setColor(Constants.THEME_COLOR);
+        g2d.setColor(this.color);
         g2d.fillArc(0, 0, this.getHeight(), this.getHeight(), startingAngle, -angle);
 
         //fill the interior of the gauge in black

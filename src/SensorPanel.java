@@ -155,9 +155,9 @@ public final class SensorPanel
         int gaugeWidth = gaugeHeight + iconWidth; //adds space for icons
 
         //CPU sensors
-        SleekGauge singleCoreCpuUsage = new SleekGauge(Sensor.MAX_SINGLE_CORE_CPU_USAGE, "res/single_core_cpu.png", gaugeWidth, gaugeHeight);
-        SleekGauge combinedCpuUsage = new SleekGauge(Sensor.COMBINED_CPU_USAGE, "res/multi_core_cpu.png", gaugeWidth, gaugeHeight);
-        SleekGauge cpuTemperature = new SleekGauge(Sensor.CPU_TEMPERATURE, "res/thermostat.png", gaugeWidth, gaugeHeight);
+        SleekGauge singleCoreCpuUsage = new SleekGauge(Sensor.MAX_SINGLE_CORE_CPU_USAGE, Constants.THEME_COLOR, "res/single_core_cpu.png", gaugeWidth, gaugeHeight);
+        SleekGauge combinedCpuUsage = new SleekGauge(Sensor.COMBINED_CPU_USAGE, Color.BLUE, "res/multi_core_cpu.png", gaugeWidth, gaugeHeight);
+        SleekGauge cpuTemperature = new SleekGauge(Sensor.CPU_TEMPERATURE, Color.RED, "res/thermostat.png", gaugeWidth, gaugeHeight);
 
         /**
          * Manually manage the layout and positions of all gauges on the CPU and GPU panels.
@@ -191,9 +191,9 @@ public final class SensorPanel
         mainPanel.add(gpuPanel, gbc);
 
         //GPU sensors
-        SleekGauge gpuPowerUsage = new SleekGauge(Sensor.GPU_POWER_USAGE, "res/lightning_bolt.png", gaugeWidth, gaugeHeight);
-        SleekGauge gpuUsage = new SleekGauge(Sensor.GPU_USAGE, "res/gpu.png", gaugeWidth, gaugeHeight);
-        SleekGauge gpuTemperature = new SleekGauge(Sensor.GPU_TEMPERATURE, "res/thermostat.png", gaugeWidth, gaugeHeight);
+        SleekGauge gpuPowerUsage = new SleekGauge(Sensor.GPU_POWER_USAGE, Color.YELLOW, "res/lightning_bolt.png", gaugeWidth, gaugeHeight);
+        SleekGauge gpuUsage = new SleekGauge(Sensor.GPU_USAGE, Color.GREEN, "res/gpu.png", gaugeWidth, gaugeHeight);
+        SleekGauge gpuTemperature = new SleekGauge(Sensor.GPU_TEMPERATURE, Color.RED, "res/thermostat.png", gaugeWidth, gaugeHeight);
 
         GridBagConstraints gpuGbc = new GridBagConstraints();
         gpuGbc.gridx = 0;
