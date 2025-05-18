@@ -1,7 +1,5 @@
 package src.figure;
 
-import static src.util.Logger.logError;
-
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -10,10 +8,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
 
 import src.Constants;
 import src.Sensor;
@@ -34,7 +28,7 @@ public final class Thermostat extends Figure
      * Creates a new thermostat.
      *
      * @param sensor The sensor to display the data of
-     * @param iconPath The path to an icon to display
+     * @param iconPath The path to an icon to load and display
      * @param size The size to set this thermostat
      */
     public Thermostat(Sensor sensor, String iconPath, Dimension size)
@@ -46,23 +40,8 @@ public final class Thermostat extends Figure
 
         //make the thermometer's width a percentage of the width of this panel
         this.thermWidth = (int)(this.getPreferredSize().width * 0.035);
-
-        //load the icon
-        Image iconTmp = null;
-
-        try
-        {
-            //resize the icon to be 30% of the panel's width
-            iconTmp = ImageIO.read(new File(iconPath)).getScaledInstance((int)(size.getWidth() * 0.3),
-                                                                         (int)(size.getWidth() * 0.3),
-                                                                         Image.SCALE_SMOOTH);
-        }
-        catch (IOException e)
-        {
-            logError("Unable to load the following icon: " + iconPath, e);
-        }
-
-        this.icon = iconTmp;
+        int iconSize = (int)(this.getPreferredSize().width * 0.3);
+        this.icon = Utils.loadImage(iconPath, iconSize, iconSize);
     }
 
     @Override

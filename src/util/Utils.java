@@ -5,22 +5,25 @@ import static src.util.Logger.logError;
 import static src.util.Logger.logWarning;
 
 import java.awt.Font;
-import java.awt.geom.Rectangle2D;
 import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.geom.Rectangle2D;
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Spliterator;
 import java.util.Spliterators;
+import java.util.TimerTask;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-import java.util.TimerTask;
 
-import javax.swing.plaf.FontUIResource;
+import javax.imageio.ImageIO;
 import javax.swing.UIManager;
+import javax.swing.plaf.FontUIResource;
 
 /**
  * A class to hold various, non-related utilities.
@@ -100,6 +103,30 @@ public final class Utils
     public static double celsiusToFahrenheit(double celsius)
     {
         return celsius * 1.8 + 32;
+    }
+
+    /**
+     * Loads image at the given path and scales it to the given size.
+     *
+     * If the image fails to be loaded, exits the program.
+     *
+     * @param iconPath The path to load the icon from
+     * @param width The width to set the image
+     * @param width The height to set the image
+     * @return An Image set to the given size
+     */
+    public static Image loadImage(String iconPath, int width, int height)
+    {
+        try
+        {
+            return ImageIO.read(new File(iconPath)).getScaledInstance(width, height, Image.SCALE_SMOOTH);
+        }
+        catch (IOException e)
+        {
+            logError("Failed to load icon: " + iconPath, e);
+            System.exit(1);
+            return null;
+        }
     }
 
     /**

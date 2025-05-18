@@ -1,19 +1,13 @@
 package src.figure;
 
-import static src.util.Logger.logError;
-
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.image.BufferedImage;
 import java.awt.RenderingHints;
-import java.io.File;
-import java.io.IOException;
-
-import javax.imageio.ImageIO;
+import java.awt.image.BufferedImage;
 
 import src.Constants;
 import src.Sensor;
@@ -62,21 +56,7 @@ public final class IconField extends Figure
         this.sensor = sensor;
         this.setBackground(Color.BLACK);
         this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-
-        //load the icon
-        Image iconTmp = null;
-
-        try
-        {
-            //resize the icon to be square and the same height as the panel
-            iconTmp = ImageIO.read(new File(iconPath)).getScaledInstance(HEIGHT, HEIGHT, Image.SCALE_SMOOTH);
-        }
-        catch (IOException e)
-        {
-            logError("Unable to load the following icon: " + iconPath, e);
-        }
-
-        this.icon = iconTmp;
+        this.icon = Utils.loadImage(iconPath, HEIGHT, HEIGHT);
     }
 
     @Override
