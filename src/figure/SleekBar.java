@@ -19,6 +19,7 @@ import src.util.Utils;
 public final class SleekBar extends Figure
 {
     private final Sensor sensor;
+    private final Color color;
     private final String title;
     private final int roundness;
     private final int thickness;
@@ -28,6 +29,7 @@ public final class SleekBar extends Figure
      * Creates a new SleekBar.
      *
      * @param sensor The sensor to display the data of
+     * @param color The color to set this bar to
      * @param dimension The preferred size to set this Figure
      * @param title The title to display at the bottom of this bar - this should be kept very short
      * @param roundness The higher the value, the more rounded the edges of the bar will be. A value of 0 will create
@@ -35,10 +37,11 @@ public final class SleekBar extends Figure
      * @param thickness The pixel thickness of the border of the bar
      * @param separation How many pixels of a gap to leave between the bar's border and the edge of the panel
      */
-    public SleekBar(Sensor sensor, Dimension dimension, String title, int roundness, int thickness, int separation)
+    public SleekBar(Sensor sensor, Color color, Dimension dimension, String title, int roundness, int thickness, int separation)
     {
         super(this.sensor = sensor);
         this.title = title;
+        this.color = color;
         this.roundness = roundness;
         this.thickness = thickness;
         this.separation = separation;
@@ -71,7 +74,7 @@ public final class SleekBar extends Figure
 
         //fill the interior of the bar up to the value
         g2d.setClip(rect);
-        g2d.setColor(Color.MAGENTA);
+        g2d.setColor(this.color);
         g2d.fillRect(0, fillHeight, this.getWidth(), this.getHeight());
         g2d.setClip(null);
 

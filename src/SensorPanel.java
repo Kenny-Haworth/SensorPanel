@@ -118,9 +118,8 @@ public final class SensorPanel
                                          ramPanel.getPreferredSize().height - ramPanel.getBorderBufferSpace());
 
         //RAM sensors
-        SleekBar ramBar = new SleekBar(Sensor.RAM_USAGE, ramDim, "RAM", 50, Constants.Border.THICKNESS, 4);
-        SleekBar vramBar = new SleekBar(Sensor.VRAM_USAGE, ramDim, "VRAM", 50, Constants.Border.THICKNESS, 4);
-
+        SleekBar ramBar = new SleekBar(Sensor.RAM_USAGE, Color.MAGENTA, ramDim, "RAM", 50, Constants.Border.THICKNESS, 4);
+        SleekBar vramBar = new SleekBar(Sensor.VRAM_USAGE, new Color(50, 100, 50), ramDim, "VRAM", 50, Constants.Border.THICKNESS, 4);
         GridBagConstraints ramGbc = new GridBagConstraints();
         ramGbc.gridx = 0;
 
