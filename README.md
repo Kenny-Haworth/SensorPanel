@@ -64,27 +64,27 @@ Component layout, described left-to-right and top-to-bottom within each panel:
     * 🟪 RAM usage
     * 🟩 VRAM usage
  - Top left panel
-    * <img src="res/single_core_cpu.png" width="22"/> Single-core CPU usage (max usage seen across all individual cores)
-    * <img src="res/multi_core_cpu.png" width="22"/> All-core CPU usage
-    * <img src="res/thermostat.png" width="22"/> CPU temperature
+    * <img src="res/icons/single_core_cpu.png" width="22"/> Single-core CPU usage (max usage seen across all individual cores)
+    * <img src="res/icons/multi_core_cpu.png" width="22"/> All-core CPU usage
+    * <img src="res/icons/thermostat.png" width="22"/> CPU temperature
  - Bottom left panel
-    * <img src="res/lightning_bolt.png" width="22"/> GPU power consumption
-    * <img src="res/gpu.png" width="22"/> GPU utilization
-    * <img src="res/thermostat.png" width="22"/> GPU temperature
+    * <img src="res/icons/lightning_bolt.png" width="22"/> GPU power consumption
+    * <img src="res/icons/gpu.png" width="22"/> GPU utilization
+    * <img src="res/icons/thermostat.png" width="22"/> GPU temperature
  - Center right panel
-    * <img src="res/air.png" width="22"/> Air temperature within the case
-    * <img src="res/water.png" width="22"/> Coolant temperature
+    * <img src="res/icons/air.png" width="22"/> Air temperature within the case
+    * <img src="res/icons/water.png" width="22"/> Coolant temperature
  - Right panel
-    * <img src="res/electric_plug.png" width="22"/> Total system power consumption
+    * <img src="res/icons/electric_plug.png" width="22"/> Total system power consumption
         - Measured at the wall
-    * <img src="res/motherboard.png" width="22"/> Secondary power usage
+    * <img src="res/icons/motherboard.png" width="22"/> Secondary power usage
         - Calculated as (total system power consumption - CPU power consumption - GPU power consumption)
-    * <img src="res/money.png" width="22"/> Cost to operate computer per hour
+    * <img src="res/icons/money.png" width="22"/> Cost to operate computer per hour
         - Based on the current total power consumption and the electricity price per kwh in my area. Note that monitors can be
           quite power-hungry and are not included in this value.
-    * <img src="res/fps.png" width="22"/> Frames per second
-    * <img src="res/up.png" width="22"/> System upload usage
-    * <img src="res/down.png" width="22"/> System download usage
+    * <img src="res/icons/fps.png" width="22"/> Frames per second
+    * <img src="res/icons/up.png" width="22"/> System upload usage
+    * <img src="res/icons/down.png" width="22"/> System download usage
 
 <a name="Performance"></a>
 ## Performance
@@ -111,16 +111,16 @@ program itself.
 ## Input Sources
 
 The program receives data from the following 3 sources:
- - <img src="res/HwInfo.png" width="22"/> [HwInfo](https://www.hwinfo.com/)
- - <img src="res/FanControl.svg" width="22"/> [FanControl](https://getfancontrol.com/)
- - <img src="res/TP-Link_Kasa.png" width="22"/> [TP-Link Kasa
+ - <img src="res/icons/HwInfo.png" width="22"/> [HwInfo](https://www.hwinfo.com/)
+ - <img src="res/icons/FanControl.svg" width="22"/> [FanControl](https://getfancontrol.com/)
+ - <img src="res/icons/TP-Link_Kasa.png" width="22"/> [TP-Link Kasa
    HS110](https://www.tp-link.com/us/home-networking/smart-plug/hs110/)
 
-<img src="res/HwInfo.png" width="22"/> **HwInfo** can provide utilizations, temperatures, and power draw for nearly all hardware
+<img src="res/icons/HwInfo.png" width="22"/> **HwInfo** can provide utilizations, temperatures, and power draw for nearly all hardware
 components within a computer, and thanks to HwInfo's integration with RivaTuner Statistics Server, framerate can also be monitored
 via the HwInfo interface.
 
-<img src="res/FanControl.svg" width="22"/> The need for **FanControl** integration arose from a unique problem. My computer has a
+<img src="res/icons/FanControl.svg" width="22"/> The need for **FanControl** integration arose from a unique problem. My computer has a
 Corsair iCUE Commander Core XT (CCXT) which connects to temperature probes that monitor the coolant and air temperatures.
 Corsair's iCue software is proprietary and does not provide an accessible API. While HwInfo can read values from the CCXT, it does
 so without proper mutex handling, causing RGB flickering. This occurs because HwInfo fails to acquire the required
@@ -133,7 +133,7 @@ closed-source, the [CorsairLink plugin](https://github.com/EvanMulawski/FanContr
 mutex properly. I cloned the plugin, modified it to intercept the CCXT temperature values just before they’re displayed, and
 broadcast the values over a UDP port which the SensorPanel can easily listen to.
 
-<img src="res/TP-Link_Kasa.png" width="22"/> **TP-Link Kasa** smart plug integration solved the following problem: I wanted to
+<img src="res/icons/TP-Link_Kasa.png" width="22"/> **TP-Link Kasa** smart plug integration solved the following problem: I wanted to
 know exactly how much power my computer was drawing, but that's something computer hardware cannot estimate accurately due to the
 lossy conversion from AC to DC power by the PSU. (The Corsair AX1600i PSU is actually capable of monitoring power draw live, but
 the PSU is large, ludicrously expensive, and has a proprietary API.) What is required is an energy monitor at the wall outlet that
