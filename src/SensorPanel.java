@@ -283,31 +283,7 @@ public final class SensorPanel
     }
 
     /**
-     * Starts up programs that require special privileges or timing.
-     *
-     * The majority of Windows startup programs can simply be started using the startup folder or Task Scheduler. However, neither
-     * of these work to automatically start programs which require administrative privileges and must run using a GUI on a
-     * non-admin account.
-     *
-     * A solution to this is RunAsTool, a third-party program which allows non-admin users to run programs with administrative
-     * privileges without requiring an administrative password. While the tool doesn't do this automatically upon a user logging
-     * in, it's a simple matter to use Task Scheduler to run RunAsTool when the user logs in to start the necessary programs with
-     * administrative privileges. The drawback to this is that it fires a UAC prompt for every program it starts - which can
-     * quickly become obnoxious to press "Yes" for every administrative program desired to be launched when logging in.
-     *
-     * A simple workaround to this is have SensorPanel launch all administrative programs. As SensorPanel is started with
-     * administrative privileges, any programs it starts up will be started with administrative privileges as well, and these
-     * programs can run with GUIs. Thus, only the SensorPanel itself is started using RunAsTool via Task Scheduler, and it starts
-     * the rest of the programs requiring administrative privileges, allowing there to be only a single UAC prompt.
-     *
-     * This leaves one last issue - some programs must start under a standard user's account (non-admin) but must start after an
-     * admin program has started. An example of this is FanControl and SignalRGB. FanControl must launch before SignalRGB does,
-     * but FanControl must run as an admin and SignalRGB must run under the standard user's account. In Windows, there is no way
-     * for an admin to launch a program as another user without supplying the user's password (as there is in Linux). A workaround
-     * for this is to directly fire a Task Scheduler task tied to the standard user's account.
-     *
-     * Thus, admin programs can be launched here as any other program is launched and non-admin programs can be launched using
-     * Task Scheduler.
+     * Starts up programs that require administrative privileges or special timing.
      */
     private static void handleStartupPrograms()
     {
