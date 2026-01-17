@@ -1,5 +1,7 @@
 package src.figure;
 
+import static forge.Logger.logError;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -8,9 +10,10 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.io.IOException;
 
+import forge.ForgeUtils;
 import src.Sensor;
-import src.util.Utils;
 
 /**
  * This class creates a modern, smooth gauge.
@@ -43,8 +46,21 @@ public final class SleekGauge extends Figure
 
         //make the thickness a percentage of the height of this panel
         this.thickness = (int)(this.getPreferredSize().height * 0.08);
+
+        //load the icon
         int iconSize = (int)(this.getPreferredSize().height * 0.28);
-        this.icon = Utils.loadImage(iconPath, iconSize, iconSize);
+        Image loadedIcon = null;
+        try
+        {
+            loadedIcon = ForgeUtils.loadImage(iconPath, iconSize, iconSize);
+        }
+        catch (IOException e)
+        {
+            logError("Failed to load icon: " + iconPath, e);
+            System.exit(1);
+        }
+
+        this.icon = loadedIcon;
     }
 
     @Override
@@ -87,7 +103,7 @@ public final class SleekGauge extends Figure
                      this.thickness, this.thickness);
 
         //set the font size
-        Utils.setFontFromWidth(g2d, "100", this.getHeight() - this.thickness * 4);
+        ForgeUtils.setFontFromWidth(g2d, "100", this.getHeight() - this.thickness * 4);
 
         //display the sensor's value in the center
         FontMetrics metrics = g2d.getFontMetrics();

@@ -9,9 +9,9 @@ import java.awt.Graphics2D;
 import java.awt.RenderingHints;
 import java.awt.geom.RoundRectangle2D;
 
+import forge.ForgeUtils;
 import src.Constants;
 import src.Sensor;
-import src.util.Utils;
 
 /**
  * This class creates a modern, smooth bar.
@@ -61,7 +61,7 @@ public final class SleekBar extends Figure
         int borderSize = this.separation + this.thickness/2;
 
         //calculate the font size for all rendered text
-        Utils.setFontFromWidth(g2d, "100%", this.getWidth() - borderSize * 2);
+        ForgeUtils.setFontFromWidth(g2d, "100%", this.getWidth() - borderSize * 2);
         FontMetrics metrics = g2d.getFontMetrics();
         int interiorDrawableHeight = this.getHeight() - 2 * borderSize - metrics.getAscent();
         int fillHeight = (int)(borderSize + interiorDrawableHeight * (1 - fillPerc));

@@ -1,5 +1,7 @@
 package src.figure;
 
+import static forge.Logger.logError;
+
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FontMetrics;
@@ -8,10 +10,11 @@ import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 
+import forge.ForgeUtils;
 import src.Constants;
 import src.Sensor;
-import src.util.Utils;
 
 /**
  * This class displays an icon with a Sensor's data to the right of it.
@@ -36,11 +39,11 @@ public final class IconField extends Figure
         Graphics2D g2d = (Graphics2D)buffer.getGraphics();
 
         //determine the standard font size
-        Utils.setFontFromWidthAndHeight(g2d, "00 Mb/s", WIDTH - HEIGHT, HEIGHT);
+        ForgeUtils.setFontFromWidthAndHeight(g2d, "00 Mb/s", WIDTH - HEIGHT, HEIGHT);
         FONT_SIZE = g2d.getFont().getSize();
 
         //determine the small font size for longer text
-        Utils.setFontFromWidthAndHeight(g2d, "000 Mb/s", WIDTH - HEIGHT, HEIGHT);
+        ForgeUtils.setFontFromWidthAndHeight(g2d, "000 Mb/s", WIDTH - HEIGHT, HEIGHT);
         SMALL_FONT_SIZE = g2d.getFont().getSize();
     }
 
@@ -56,7 +59,20 @@ public final class IconField extends Figure
         this.sensor = sensor;
         this.setBackground(Color.BLACK);
         this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
-        this.icon = Utils.loadImage(iconPath, HEIGHT, HEIGHT);
+
+        //load the icon
+        Image loadedIcon = null;
+        try
+        {
+            loadedIcon = ForgeUtils.loadImage(iconPath, HEIGHT, HEIGHT);
+        }
+        catch (IOException e)
+        {
+            logError("Failed to load icon: " + iconPath, e);
+            System.exit(1);
+        }
+
+        this.icon = loadedIcon;
     }
 
     @Override

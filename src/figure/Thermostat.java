@@ -1,5 +1,7 @@
 package src.figure;
 
+import static forge.Logger.logError;
+
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -8,10 +10,11 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.RenderingHints;
+import java.io.IOException;
 
+import forge.ForgeUtils;
 import src.Constants;
 import src.Sensor;
-import src.util.Utils;
 
 /**
  * This class creates a thermostat.
@@ -40,8 +43,21 @@ public final class Thermostat extends Figure
 
         //make the thermometer's thickness a percentage of the width of this panel
         this.thickness = (int)(this.getPreferredSize().width * 0.035);
+
+        //load the icon
         int iconSize = (int)(this.getPreferredSize().width * 0.3);
-        this.icon = Utils.loadImage(iconPath, iconSize, iconSize);
+        Image loadedIcon = null;
+        try
+        {
+            loadedIcon = ForgeUtils.loadImage(iconPath, iconSize, iconSize);
+        }
+        catch (IOException e)
+        {
+            logError("Failed to load icon: " + iconPath, e);
+            System.exit(1);
+        }
+
+        this.icon = loadedIcon;
     }
 
     @Override
@@ -136,7 +152,7 @@ public final class Thermostat extends Figure
 
         //set the font size
         String value = this.sensor.getRoundedData() + this.sensor.unit();
-        Utils.setFontFromWidth(g2d, value + "0", diameter - this.thickness);
+        ForgeUtils.setFontFromWidth(g2d, value + "0", diameter - this.thickness);
 
         //display the sensor's value in the center
         FontMetrics metrics = g2d.getFontMetrics();

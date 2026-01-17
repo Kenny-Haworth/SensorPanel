@@ -1,6 +1,6 @@
 package src;
 
-import static src.util.Logger.logWarning;
+import static forge.Logger.logWarning;
 
 import java.text.DecimalFormat;
 

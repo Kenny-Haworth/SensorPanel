@@ -1,7 +1,7 @@
 package src;
 
-import static src.util.Logger.logError;
-import static src.util.Logger.logWarning;
+import static forge.Logger.logError;
+import static forge.Logger.logWarning;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -34,12 +34,12 @@ import javax.swing.JPopupMenu;
 import javax.swing.SwingUtilities;
 import javax.swing.plaf.FontUIResource;
 
+import forge.ForgeUtils;
+import forge.RoundedPanel;
 import src.figure.IconField;
 import src.figure.SleekBar;
 import src.figure.SleekGauge;
 import src.figure.Thermostat;
-import src.util.RoundedPanel;
-import src.util.Utils;
 
 /**
  * A custom Sensor Panel for a display within a Windows gaming computer.
@@ -78,7 +78,7 @@ public final class SensorPanel
     public SensorPanel()
     {
         //set the global default font for the program
-        Utils.setGlobalFont(new FontUIResource("Arial", Font.PLAIN, 20));
+        ForgeUtils.setGlobalFont(new FontUIResource("Arial", Font.PLAIN, 20));
 
         //setup the main frame
         this.frame = new JFrame("Sensor Panel");
@@ -292,11 +292,11 @@ public final class SensorPanel
         {
             try (ScheduledExecutorService executor = Executors.newScheduledThreadPool(Runtime.getRuntime().availableProcessors()))
             {
-                executor.submit(() -> Utils.launchProgram("C:/Program Files (x86)/FanControl/FanControl.exe", false));
-                executor.submit(() -> Utils.launchProgram("C:/Program Files (x86)/MSI Afterburner/MSIAfterburner.exe", false));
-                executor.submit(() -> Utils.launchProgram("C:/Program Files (x86)/RivaTuner Statistics Server/RTSS.exe", false));
-                executor.submit(() -> Utils.launchProgram("C:/Program Files/HWiNFO64/HWiNFO64.EXE", false));
-                executor.schedule(() -> Utils.runTaskSchedulerTask("\\Custom\\SignalRGB", "SignalRgbLauncher.exe", false), 5, TimeUnit.SECONDS);
+                executor.submit(() -> ForgeUtils.launchProgram("C:/Program Files (x86)/FanControl/FanControl.exe", false));
+                executor.submit(() -> ForgeUtils.launchProgram("C:/Program Files (x86)/MSI Afterburner/MSIAfterburner.exe", false));
+                executor.submit(() -> ForgeUtils.launchProgram("C:/Program Files (x86)/RivaTuner Statistics Server/RTSS.exe", false));
+                executor.submit(() -> ForgeUtils.launchProgram("C:/Program Files/HWiNFO64/HWiNFO64.EXE", false));
+                executor.schedule(() -> ForgeUtils.runTaskSchedulerTask("\\Custom\\SignalRGB", "SignalRgbLauncher.exe", false), 5, TimeUnit.SECONDS);
             }
         },
         "Launch Startup Programs")
@@ -456,7 +456,7 @@ public final class SensorPanel
     private static void monitorHwInfoSensors()
     {
         long startTime = System.nanoTime();
-        new Timer("HwInfo Sensor Thread").scheduleAtFixedRate(Utils.timer(() ->
+        new Timer("HwInfo Sensor Thread").scheduleAtFixedRate(ForgeUtils.timer(() ->
         {
             try
             {
@@ -547,7 +547,7 @@ public final class SensorPanel
 
                     //extract the temperature and sensor number from the packet
                     String[] data = new String(packet.getData(), 0, packet.getLength()).split(":");
-                    double temperature = Utils.celsiusToFahrenheit(Double.parseDouble(data[1]));
+                    double temperature = ForgeUtils.celsiusToFahrenheit(Double.parseDouble(data[1]));
 
                     //channel 0 is air temperature
                     if ("0".equals(data[0]))
@@ -582,7 +582,7 @@ public final class SensorPanel
      */
     private static void monitorTpLinkSensors()
     {
-        new Timer("TpLink Sensor Thread").scheduleAtFixedRate(Utils.timer(() ->
+        new Timer("TpLink Sensor Thread").scheduleAtFixedRate(ForgeUtils.timer(() ->
         {
             try
             {
@@ -658,7 +658,7 @@ public final class SensorPanel
 
                 //position the SensorPanel on the center of the monitor
                 this.frame.setSize(Constants.FRAME_WIDTH, Constants.FRAME_HEIGHT);
-                Utils.centerComponent(this.frame, device);
+                ForgeUtils.centerComponent(this.frame, device);
                 break;
             }
         }
