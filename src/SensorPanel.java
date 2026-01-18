@@ -82,6 +82,16 @@ public final class SensorPanel
 
         //setup the main frame
         this.frame = new JFrame("Sensor Panel");
+        try
+        {
+            this.frame.setIconImage(ForgeUtils.loadImage("/res/icons/cpu.png"));
+        }
+        catch (IOException e)
+        {
+            logError("Unable to load program icon", e);
+            System.exit(1);
+        }
+
         setupMainFrame();
         if (Constants.ENABLE_DEBUG) moveSensorPanelToSecondaryMonitor();
 
@@ -154,9 +164,9 @@ public final class SensorPanel
         int gaugeWidth = gaugeHeight + iconWidth; //adds space for icons
 
         //CPU sensors
-        SleekGauge singleCoreCpuUsage = new SleekGauge(Sensor.MAX_SINGLE_CORE_CPU_USAGE, Constants.THEME_COLOR, "res/icons/single_core_cpu.png", gaugeWidth, gaugeHeight);
-        SleekGauge combinedCpuUsage = new SleekGauge(Sensor.COMBINED_CPU_USAGE, Color.BLUE, "res/icons/multi_core_cpu.png", gaugeWidth, gaugeHeight);
-        SleekGauge cpuTemperature = new SleekGauge(Sensor.CPU_TEMPERATURE, Color.RED, "res/icons/thermostat.png", gaugeWidth, gaugeHeight);
+        SleekGauge singleCoreCpuUsage = new SleekGauge(Sensor.MAX_SINGLE_CORE_CPU_USAGE, Constants.THEME_COLOR, "/res/icons/single_core_cpu.png", gaugeWidth, gaugeHeight);
+        SleekGauge combinedCpuUsage = new SleekGauge(Sensor.COMBINED_CPU_USAGE, Color.BLUE, "/res/icons/multi_core_cpu.png", gaugeWidth, gaugeHeight);
+        SleekGauge cpuTemperature = new SleekGauge(Sensor.CPU_TEMPERATURE, Color.RED, "/res/icons/thermostat.png", gaugeWidth, gaugeHeight);
 
         /**
          * Manually manage the layout and positions of all gauges on the CPU and GPU panels.
@@ -190,9 +200,9 @@ public final class SensorPanel
         mainPanel.add(gpuPanel, gbc);
 
         //GPU sensors
-        SleekGauge gpuPowerUsage = new SleekGauge(Sensor.GPU_POWER_USAGE, Color.YELLOW, "res/icons/lightning_bolt.png", gaugeWidth, gaugeHeight);
-        SleekGauge gpuUsage = new SleekGauge(Sensor.GPU_USAGE, Color.GREEN, "res/icons/gpu.png", gaugeWidth, gaugeHeight);
-        SleekGauge gpuTemperature = new SleekGauge(Sensor.GPU_TEMPERATURE, Color.RED, "res/icons/thermostat.png", gaugeWidth, gaugeHeight);
+        SleekGauge gpuPowerUsage = new SleekGauge(Sensor.GPU_POWER_USAGE, Color.YELLOW, "/res/icons/lightning_bolt.png", gaugeWidth, gaugeHeight);
+        SleekGauge gpuUsage = new SleekGauge(Sensor.GPU_USAGE, Color.GREEN, "/res/icons/gpu.png", gaugeWidth, gaugeHeight);
+        SleekGauge gpuTemperature = new SleekGauge(Sensor.GPU_TEMPERATURE, Color.RED, "/res/icons/thermostat.png", gaugeWidth, gaugeHeight);
 
         GridBagConstraints gpuGbc = new GridBagConstraints();
         gpuGbc.gridx = 0;
@@ -220,8 +230,8 @@ public final class SensorPanel
                                            thermostatPanel.getPreferredSize().height - thermostatPanel.getBorderBufferSpace());
 
         //Thermostat sensors
-        Thermostat airTherm = new Thermostat(Sensor.AIR_TEMPERATURE, "res/icons/air.png", thermDim);
-        Thermostat waterTherm = new Thermostat(Sensor.WATER_TEMPERATURE, "res/icons/water.png", thermDim);
+        Thermostat airTherm = new Thermostat(Sensor.AIR_TEMPERATURE, "/res/icons/air.png", thermDim);
+        Thermostat waterTherm = new Thermostat(Sensor.WATER_TEMPERATURE, "/res/icons/water.png", thermDim);
 
         GridBagConstraints thermGbc = new GridBagConstraints();
         thermGbc.gridx = 0;
@@ -239,12 +249,12 @@ public final class SensorPanel
         mainPanel.add(fieldPanel, gbc);
 
         //Field sensors
-        IconField systemPowerUsage = new IconField(Sensor.SYSTEM_POWER_USAGE, "res/icons/electric_plug.png");
-        IconField secondaryPowerUsage = new IconField(Sensor.SECONDARY_POWER_USAGE, "res/icons/motherboard.png");
-        IconField costPerHour = new IconField(Sensor.SYSTEM_COST_PER_HOUR, "res/icons/money.png");
-        IconField fps = new IconField(Sensor.FPS, "res/icons/fps.png");
-        IconField internetUpload = new IconField(Sensor.INTERNET_UPLOAD_USAGE, "res/icons/up.png");
-        IconField internetDownload = new IconField(Sensor.INTERNET_DOWNLOAD_USAGE, "res/icons/down.png");
+        IconField systemPowerUsage = new IconField(Sensor.SYSTEM_POWER_USAGE, "/res/icons/electric_plug.png");
+        IconField secondaryPowerUsage = new IconField(Sensor.SECONDARY_POWER_USAGE, "/res/icons/motherboard.png");
+        IconField costPerHour = new IconField(Sensor.SYSTEM_COST_PER_HOUR, "/res/icons/money.png");
+        IconField fps = new IconField(Sensor.FPS, "/res/icons/fps.png");
+        IconField internetUpload = new IconField(Sensor.INTERNET_UPLOAD_USAGE, "/res/icons/up.png");
+        IconField internetDownload = new IconField(Sensor.INTERNET_DOWNLOAD_USAGE, "/res/icons/down.png");
 
         GridBagConstraints fieldGbc = new GridBagConstraints();
         fieldGbc.gridx = 0;

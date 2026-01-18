@@ -3,6 +3,7 @@
 *.png
 *.jpg
 *.mp4
+*.xml
 *.exe
 bin
 .vscode
